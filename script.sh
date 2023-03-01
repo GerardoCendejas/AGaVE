@@ -2,23 +2,17 @@
 
 # Análisis de calidad de las lecturas usando FastQC
 
-fastqc F73_1.fastq
+fastqc F73_1.fastq.gz
 
-fastqc F73_2.fastq
+fastqc F73_2.fastq.gz
 
 # Resumir en un sólo archivo con MultiQC
 
 multiqc .
 
-### Eliminar documentos no necesarios
-
-rm *fastqc*
-
 #Descomprimir archivos fastq.gz
 
-## Ya estaban descomprmidos en este caso
-
-#gunzip F73_1.fastq.gz F73_2.fastq.gz
+gunzip F73_1.fastq.gz F73_2.fastq.gz
 
 # Separar los archivos en partes más pequeñas con fastq-splitter
 
