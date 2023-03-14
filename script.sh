@@ -1,29 +1,27 @@
 #!/bin/bash
 
-# Análisis de calidad de las lecturas usando FastQC
+# Cargamos las funciones que se utilizarán
 
-fastqc F73_1.fastq.gz
+MYSELF="$(realpath "$0")"
 
-fastqc F73_2.fastq.gz
+MYDIR="${MYSELF%/*}"
 
-# Resumir en un sólo archivo con MultiQC
+source "$MYDIR/functions.sh"
 
-multiqc .
+####### Nombramiento de variables #######
 
-#Descomprimir archivos fastq.gz
+sample="prueba"  # Muestra a analizar
 
-gunzip F73_1.fastq.gz F73_2.fastq.gz
+n_parts=10 # Número de partes en dividir la muestra
 
-# Separar los archivos en partes más pequeñas con fastq-splitter
+####### Análisis de calidad de las lecturas usando FastQC y MultiQC #######
 
-n_parts=10
+QualityControl $sample
 
-fastq-splitter.pl --n-parts $n_parts --check F73_1.fastq
+#Descomprimir archivos fastq.gz  #### En el data set de prueba ya esta descomprimido
 
-fastq-splitter.pl --n-parts $n_parts --check F73_2.fastq
+#gunzip F73_1.fastq.gz F73_2.fastq.gz
 
-# Mover a carpeta nueva
+### Separar los archivos en partes más pequeñas y mover a propia carpeta ###
 
-mkdir parts
-
-mv F73_*.part* ./parts/
+SplitFiles $sample $n_parts
