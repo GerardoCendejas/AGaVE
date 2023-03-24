@@ -60,7 +60,8 @@ function CleanReads (){
 	do
 	        i=$(($i+1))
 		j="0"
-		if [ $i -ne $2 ]; then
+		if [[ $i -lt 10 ]]
+		then
 		j="$j$i"
 		else
 		j=$i
@@ -102,6 +103,8 @@ function CleanReads (){
 	bbnorm.sh in=./trim/single_reads_trim.fastq out=./norm/singletons_norm.fastq target=100 || echo "No se obtuvieron singletons durante el análisis de calidad de esta muestra"
 
 	rm -rf dedup qual compl trim
+
+	rm *.fastq
 
 	cd ..
 
