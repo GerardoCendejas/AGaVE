@@ -26,6 +26,6 @@ CleanReads $sample $min_qual $min_len
 
 ### Mapeo a host
 
-HostMapping $sample $genome
+#HostMapping $sample $genome
 
 
