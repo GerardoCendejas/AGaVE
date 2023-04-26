@@ -20,24 +20,6 @@ function QualityControl () {
 
 }
 
-function SplitFiles() {
-
-	echo "#######Separando los archivos de la muestra $1 en $2 partes#######"
-
-	# Separa la muestra en n_parts partes y mueve a carpeta ./parts/
-
-	fastq-splitter.pl --n-parts $2 --check $1_1.fastq
-
-	fastq-splitter.pl --n-parts $2 --check $1_2.fastq
-
-	# Crear carpeta ./parts/ y mover archivos
-
-	mkdir parts
-
-	mv $1_*.part* ./parts/
-
-}
-
 function CleanReads (){
 
 	echo "#######Limpiando las lecturas#######"
