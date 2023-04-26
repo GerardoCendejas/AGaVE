@@ -18,7 +18,7 @@ min_qual=28 # Calidad mínima de las lecturas para la limpieza
 
 min_len=75 # Longitud mínima de las lecturas para la limpieza
 
-genome= # Path to reference genome
+genome="/labs/csbig/gerardo/genomes/human/STAR" # Path to reference genome
 
 ### Limpieza de las lecturas ###
 

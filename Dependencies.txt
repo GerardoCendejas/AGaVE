@@ -27,3 +27,5 @@ cd ncbi_dataset/data/GCF_000001405.40
 gffread genomic.gff -T -o genomic.gtf
 
 STAR --runMode genomeGenerate --runThreadN 16 --genomeDir ./STAR --genomeFastaFiles /labs/csbig/gerardo/genomes/human/ncbi_dataset/data/GCF_000001405.40/GCF_000001405.40_GRCh38.p14_genomic.fna --sjdbGTFfile /labs/csbig/gerardo/genomes/human/ncbi_dataset/data/GCF_000001405.40/genomic.gtf --sjdbOverhang 150
+
+# Move gtf file to ./STAR directory

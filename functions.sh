@@ -55,7 +55,7 @@ function CleanReads (){
 
 }
 
-function HostMApping(){
+function HostMapping(){
 
 	mkdir unmapped
 
