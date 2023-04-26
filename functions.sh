@@ -51,7 +51,7 @@ function CleanReads (){
 
 	bbnorm.sh in=./trim/single_reads_trim.fastq out=./clean/singletons_clean.fastq target=100 || echo "No se obtuvieron singletons durante el análisis de calidad de esta muestra"
 
-	rm -rf dedup qual compl trim
+	#rm -rf dedup qual compl trim
 
 }
 
