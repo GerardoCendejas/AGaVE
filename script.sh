@@ -10,7 +10,7 @@ source "$MYDIR/functions.sh"
 
 ####### Nombramiento de variables #######
 
-sample="SRR9298859"  # Muestra a analizar
+sample="prueba"  # Muestra a analizar
 
 n_parts=11 # Número de partes en dividir la muestra
 
