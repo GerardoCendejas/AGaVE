@@ -61,14 +61,20 @@ function HostMapping(){
 
 	cd unmapped
 
+	mkdir paired singletons
+
+	cd paired
+
 	echo  "Mapping pair reads to host"
 
-	STAR --runThreadN 16 --genomeDir $2 --sjdbGTFfile $2/*.gtf --sjdbOverhang 150 -- readFilesIn ../clean/$1_clean_1.fastq ../clean/$1_clean_2.fastq --outSAMtype BAM SortedByCoordinate --outSAMstrandField intronMotif
+	STAR --runThreadN 16 --genomeDir $2 --sjdbGTFfile $2/*.gtf --sjdbOverhang 150 -- readFilesIn ../../clean/$1_clean_1.fastq ../../clean/$1_clean_2.fastq --outSAMtype BAM SortedByCoordinate --outSAMstrandField intronMotif --outFileNamePrefix paired
+
+	cd ../singletons
 
 	echo  "Mapping singletons to host"
 
-	STAR --runThreadN 16 --genomeDir $2 --sjdbGTFfile $2/*.gtf --sjdbOverhang 150 -- readFilesIn ../clean/singletons_clean.fastq --outSAMtype BAM SortedByCoordinate --outSAMstrandField intronMotif --outFileNamePrefix singletons
+	STAR --runThreadN 16 --genomeDir $2 --sjdbGTFfile $2/*.gtf --sjdbOverhang 150 -- readFilesIn ../../clean/singletons_clean.fastq --outSAMtype BAM SortedByCoordinate --outSAMstrandField intronMotif --outFileNamePrefix singletons
 
-	cd ..
+	cd ../..
 
 }
