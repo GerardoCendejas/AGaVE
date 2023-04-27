@@ -22,7 +22,7 @@ genome="/labs/csbig/gerardo/genomes/human/STAR" # Path to reference genome
 
 ### Limpieza de las lecturas ###
 
-CleanReads $sample $min_qual $min_len
+#CleanReads $sample $min_qual $min_len
 
 ### Mapeo a host
 

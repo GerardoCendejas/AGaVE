@@ -28,11 +28,11 @@ function CleanReads (){
 
 	# Trimming con min_qual $2 y min_length $3
 
-	prinseq++ -fastq ./compl/$1_compl_1.fastq -fastq2 ./compl/$1_compl_2.fastq -trim_qual_right=$2 -trim_qual_left=$2 -trim_qual_window 1 -trim_qual_step 1 -min_len $3 -rm_header -out_good ./trim/$1_trim_1.fastq -out_good2 ./trim/$1_trim_2.fastq -out_single ./trim/$1_trim_singletons_1.fastq -out_single2 ./trim/$1_trim_singletons_2.fastq -out_bad /dev/null -out_bad2 /dev/null
+	prinseq++ -fastq ./compl/$1_compl_1.fastq -fastq2 ./compl/$1_compl_2.fastq -trim_qual_right=$2 -trim_qual_window 1 -trim_qual_step 1 -min_len $3 -rm_header -out_good ./trim/$1_trim_1.fastq -out_good2 ./trim/$1_trim_2.fastq -out_single ./trim/$1_trim_singletons_1.fastq -out_single2 ./trim/$1_trim_singletons_2.fastq -out_bad /dev/null -out_bad2 /dev/null
 
 	# Normalización de profundidad
 
-	bbnorm.sh in=./trim/$1_trim_1.fastq in2=./trim/$1_trim_2.fastq out=./clean/$1_clean_1.fastq out2=./clean/$1_clean_2.fastq target=100
+	bbnorm.sh threads=4 in=./trim/$1_trim_1.fastq in2=./trim/$1_trim_2.fastq out=./clean/$1_clean_1.fastq out2=./clean/$1_clean_2.fastq target=100
 
 
 	echo "#####Analisis de calidad de singletons#####"
@@ -47,9 +47,9 @@ function CleanReads (){
 
 	cat ./compl/*singletons* >> ./compl/single_reads_compl.fastq || echo "No se recuperaron singletons en el filtro de calidad"
 
-	prinseq++ -fastq ./compl/single_reads_compl.fastq -trim_qual_right=$2 -trim_qual_left=$2 -trim_qual_window 1 -trim_qual_step 1 -min_len $3 -rm_header -out_good ./trim/single_reads_trim -out_bad null || echo "No se puede realizar el trimming sobre singletons inexistentes"
+	prinseq++ -fastq ./compl/single_reads_compl.fastq -trim_qual_right=$2 -trim_qual_window 1 -trim_qual_step 1 -min_len $3 -rm_header -out_good ./trim/single_reads_trim -out_bad null || echo "No se puede realizar el trimming sobre singletons inexistentes"
 
-	bbnorm.sh in=./trim/single_reads_trim.fastq out=./clean/singletons_clean.fastq target=100 || echo "No se obtuvieron singletons durante el análisis de calidad de esta muestra"
+	bbnorm.sh threads=4 in=./trim/single_reads_trim.fastq out=./clean/singletons_clean.fastq target=100 || echo "No se obtuvieron singletons durante el análisis de calidad de esta muestra"
 
 	rm -rf dedup qual compl trim
 
@@ -73,7 +73,7 @@ function HostMapping(){
 
 	echo  "Mapping singletons to host"
 
-	STAR --runThreadN 16 --genomeDir $2 --sjdbGTFfile $2/*.gtf --sjdbOverhang 150 -- readFilesIn ../../clean/singletons_clean.fastq --outSAMtype BAM SortedByCoordinate --outSAMstrandField intronMotif --outFileNamePrefix singletons
+	#STAR --runThreadN 16 --genomeDir $2 --sjdbGTFfile $2/*.gtf --sjdbOverhang 150 -- readFilesIn ../../clean/singletons_clean.fastq --outSAMtype BAM SortedByCoordinate --outSAMstrandField intronMotif --outFileNamePrefix singletons
 
 	cd ../..
 
