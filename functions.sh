@@ -67,6 +67,8 @@ function HostMapping(){
 
 	echo  "Mapping singletons to host"
 
-	STAR --runThreadN 16 --genomeDir $2 --sjdbGTFfile $2/*.gtf --sjdbOverhang 150 -- readFilesIn ../clean/singletons_clean.fastq --outSAMtype BAM SortedByCoordinate --outSAMstrandField intronMotif
+	STAR --runThreadN 16 --genomeDir $2 --sjdbGTFfile $2/*.gtf --sjdbOverhang 150 -- readFilesIn ../clean/singletons_clean.fastq --outSAMtype BAM SortedByCoordinate --outSAMstrandField intronMotif --outFileNamePrefix singletons
+
+	cd ..
 
 }
