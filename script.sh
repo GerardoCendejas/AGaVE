@@ -10,9 +10,7 @@ source "$MYDIR/functions.sh"
 
 ####### Nombramiento de variables #######
 
-sample="prueba"  # Muestra a analizar
-
-n_parts=11 # Número de partes en dividir la muestra
+sample="SRR9298859"  # Muestra a analizar
 
 min_qual=28 # Calidad mínima de las lecturas para la limpieza
 

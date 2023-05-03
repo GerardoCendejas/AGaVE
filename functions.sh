@@ -38,13 +38,13 @@ function HostMapping(){
 
 	echo  "Mapping pair reads to host"
 
-	STAR --runThreadN 16 --genomeDir $2 --sjdbGTFfile $2/*.gtf --sjdbOverhang 150 -- readFilesIn ../../clean/$1_1_P.fastq ../../clean/$1_2_P.fastq --outSAMtype BAM SortedByCoordinate --outSAMstrandField intronMotif --outFileNamePrefix $1_paired
+	STAR --runThreadN 16 --genomeDir $2 --sjdbGTFfile $2/*.gtf --sjdbOverhang 150 -- readFilesIn ../../clean/$1_1_P.fastq ../../clean/$1_2_P.fastq --outSAMtype BAM SortedByCoordinate --outSAMstrandField intronMotif --outFileNamePrefix $1_paired --quantMode GeneCounts --outSAMunmapped Within
 
 	cd ../singletons
 
 	echo  "Mapping singletons to host"
 
-	STAR --runThreadN 16 --genomeDir $2 --sjdbGTFfile $2/*.gtf --sjdbOverhang 150 -- readFilesIn ../../clean/$1_singletons.fastq --outSAMtype BAM SortedByCoordinate --outSAMstrandField intronMotif --outFileNamePrefix $1_singletons
+	STAR --runThreadN 16 --genomeDir $2 --sjdbGTFfile $2/*.gtf --sjdbOverhang 150 -- readFilesIn ../../clean/$1_singletons.fastq --outSAMtype BAM SortedByCoordinate --outSAMstrandField intronMotif --outFileNamePrefix $1_singletons --quantMode GeneCounts --outSAMunmapped Within
 
 	cd ../..
 
