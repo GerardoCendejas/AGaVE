@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source ~/miniconda3/etc/profile.d/conda.sh
+
 # Cargamos las funciones que se utilizarán
 
 MYSELF="$(realpath "$0")"
