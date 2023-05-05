@@ -128,6 +128,8 @@ function AnnotatingContigs(){
 
 	prokka --addgenes --outdir $1 --locustag $1 --kingdom Viruses --prefix $1_mapped2virus --metagenome --cpus 8 --norrna --notrna --centre X --compliant ../viralmap/$1_mapped2virus.fasta
 
+	conda deactivate
+
 	cd ..
 
 }
