@@ -18,6 +18,8 @@ min_len=75 # Longitud mínima de las lecturas para la limpieza
 
 genome="/labs/csbig/gerardo/genomes/human/STAR" # Path to reference genome
 
+virusdb="/labs/csbig/gerardo/genomes/virus/virus.mmi" # Path to virus database minimap2 index
+
 ### Limpieza de las lecturas ###
 
 CleanReads $sample $min_qual $min_len $MYDIR
@@ -25,5 +27,17 @@ CleanReads $sample $min_qual $min_len $MYDIR
 ### Mapeo a host
 
 HostMapping $sample $genome
+
+### Ensamblaje de novo de lecturas no mapeadas
+
+Assembly $sample
+
+### Mapear los contigs a la base de datos de genomas virales
+
+VirusMapping $sample $virusdb
+
+### Anotando los contigs encontrados
+
+AnnotatingContigs $sample
 
 
