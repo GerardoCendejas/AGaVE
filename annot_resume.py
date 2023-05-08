@@ -124,6 +124,6 @@ for i in range(0,len(samfile.get_index_statistics()),1):
     ref = samfile.get_reference_name(i)
     iter = samfile.fetch(ref,0,samfile.get_reference_length(ref))
     for x in iter:
-        print('%s,%s,%s,%s,%s,"%s"'%(ref,str(x).split('\t')[0],aln[int(str(x).split('\t')[1])],strand[int(str(x).split("\t")[1])],str(x).split('\t')[3],get_cigar(str(x).split('\t')[5])),file=sourceFile)
+        print('%s,%s,%s,%s,%s,%s,"%s"'%(ref,str(x).split('\t')[0],aln[int(str(x).split('\t')[1])],samfile.get_reference_length(ref),strand[int(str(x).split("\t")[1])],str(x).split('\t')[3],get_cigar(str(x).split('\t')[5])),file=sourceFile)
 
 sourceFile.close()
