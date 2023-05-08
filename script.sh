@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source ~/miniconda3/etc/profile.d/conda.sh
+source /labs/csbig/gerardo/miniconda3/etc/profile.d/conda.sh
 
 # Cargamos las funciones que se utilizarán
 
