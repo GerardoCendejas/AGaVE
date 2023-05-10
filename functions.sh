@@ -148,7 +148,7 @@ function GenerateResults(){
 
 	cd results
 
-	python $1/annot_resume.py ../annot/$2/$_mapped2virus.gbk $2 ../viralmap/$2_mapped2virus_sorted.bam
+	python $1/annot_resume.py ../annot/$2/$2_mapped2virus.gbk $2 ../viralmap/$2_mapped2virus_sorted.bam
 
 	mkdir images
 
