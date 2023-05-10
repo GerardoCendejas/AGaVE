@@ -44,6 +44,6 @@ virusdb="/labs/csbig/gerardo/genomes/virus/virus.mmi" # Path to virus database m
 
 ### Generando archivos de resultados
 
-AnnotatingContigs $MYDIR $sample
+GenerateResults $MYDIR $sample
 
 
