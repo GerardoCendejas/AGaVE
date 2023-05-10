@@ -1,5 +1,9 @@
 #!/bin/bash
 
+start_h=`date +%H`
+
+start_m=`date +%M`
+
 source /labs/csbig/gerardo/miniconda3/etc/profile.d/conda.sh
 
 # Cargamos las funciones que se utilizarán
@@ -12,7 +16,7 @@ source "$MYDIR/functions.sh"
 
 ####### Nombramiento de variables #######
 
-sample="SRR9298859"  # Muestra a analizar
+sample="SRR1553464"  # Muestra a analizar
 
 min_qual=28 # Calidad mínima de las lecturas para la limpieza
 
@@ -24,23 +28,29 @@ virusdb="/labs/csbig/gerardo/genomes/virus/virus.mmi" # Path to virus database m
 
 ### Limpieza de las lecturas ###
 
-#CleanReads $sample $min_qual $min_len $MYDIR
+CleanReads $sample $min_qual $min_len $MYDIR
 
 ### Mapeo a host
 
-#HostMapping $sample $genome
+HostMapping $sample $genome
 
 ### Ensamblaje de novo de lecturas no mapeadas
 
-#Assembly $sample
+Assembly $sample
 
 ### Mapear los contigs a la base de datos de genomas virales
 
-#VirusMapping $sample $virusdb
+VirusMapping $sample $virusdb
+
+end_h=`date +%H`
+
+end_m=`date +%M`
+
+echo Execution time was `expr $end_h - $start_h` hours and `expr $end_m - $start_m` minutes
 
 ### Anotando los contigs encontrados
 
-#AnnotatingContigs $sample
+AnnotatingContigs $sample
 
 ### Generando archivos de resultados
 
