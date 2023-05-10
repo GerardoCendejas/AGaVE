@@ -110,7 +110,13 @@ function VirusMapping(){
 
 	sed -n '1~4s/^@/>/p;2~4p' $1_mapped2virus.fastq > $1_mapped2virus.fasta
 
+	samtools sort $1_mapped2virus.bam -o $1_mapped2virus_sorted.bam
+
+	samtools index -b $1_mapped2virus_sorted.bam
+
 	rm *.fastq *.sam
+
+	rm sort $1_mapped2virus.bam
 
 	cd ..
 
@@ -120,7 +126,7 @@ function AnnotatingContigs(){
 
 	printf  "\n###Annotating contigs mapped to viral genomes###\n\n"
 
-	mkdir annot
+	mkdir 
 
 	cd annot
 
@@ -134,5 +140,22 @@ function AnnotatingContigs(){
 
 }
 
+function GenerateResults(){
 
+	printf  "\n###Creating results files###\n\n"
 
+	mkdir results
+
+	cd results
+
+	python $1/annot_result.py ../annot/$2/$_mapped2virus.gbk $2 ../viralmap/$2_mapped2virus_sorted.bam
+
+	mkdir images
+
+	cd images
+
+	Rscript --vanilla $1/Plot.R ../$2_aln.csv 
+
+	cd ../..
+
+}

@@ -24,22 +24,26 @@ virusdb="/labs/csbig/gerardo/genomes/virus/virus.mmi" # Path to virus database m
 
 ### Limpieza de las lecturas ###
 
-CleanReads $sample $min_qual $min_len $MYDIR
+#CleanReads $sample $min_qual $min_len $MYDIR
 
 ### Mapeo a host
 
-HostMapping $sample $genome
+#HostMapping $sample $genome
 
 ### Ensamblaje de novo de lecturas no mapeadas
 
-Assembly $sample
+#Assembly $sample
 
 ### Mapear los contigs a la base de datos de genomas virales
 
-VirusMapping $sample $virusdb
+#VirusMapping $sample $virusdb
 
 ### Anotando los contigs encontrados
 
-AnnotatingContigs $sample
+#AnnotatingContigs $sample
+
+### Generando archivos de resultados
+
+AnnotatingContigs $MYDIR $sample
 
 

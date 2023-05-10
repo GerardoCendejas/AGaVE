@@ -12,7 +12,7 @@ import re
 
 # Load gbk file
 
-aln_file="sorted.bam"
+aln_file=sys.argv[3]
 
 records = list(SeqIO.parse(sys.argv[1], "genbank"))
 
@@ -40,14 +40,16 @@ sourceFile.close()
 
 # Escribir archivo tabular con las anotaciones de cara transcrito y el ID de la proteína a la cuál es idéntico. 
 
+p = re.compile(r'L\wC\wE')
+
 sourceFile = open(f'./{sys.argv[2]}_annotated.csv', 'w')
 
-print("Contig,LocusTag,ContigLen,LocusLen,ProteinLen,Product,Similar2",file=sourceFile)
+print("Contig,LocusTag,ContigLen,LocusLen,ProteinLen,Product,Similar2,LXCXE",file=sourceFile)
 
 for record in records:
     for feature in record.features:
         if feature.type == "CDS" and feature.qualifiers["product"][0]!="hypothetical protein":
-            print(f'{record.name},{feature.qualifiers["locus_tag"][0]},{abs(record.features[0].location.end)},{abs(feature.location.end-feature.location.start)},{len(feature.qualifiers["translation"][0])},"{feature.qualifiers["product"][0]}",{feature.qualifiers["inference"][1].split(":")[2]}',file=sourceFile)
+            print(f'{record.name},{feature.qualifiers["locus_tag"][0]},{abs(record.features[0].location.end)},{abs(feature.location.end-feature.location.start)},{len(feature.qualifiers["translation"][0])},"{feature.qualifiers["product"][0]}",{feature.qualifiers["inference"][1].split(":")[2]},{len(p.findall(feature.qualifiers["translation"][0]))!=0}',file=sourceFile)
 
 sourceFile.close()
 
@@ -124,6 +126,6 @@ for i in range(0,len(samfile.get_index_statistics()),1):
     ref = samfile.get_reference_name(i)
     iter = samfile.fetch(ref,0,samfile.get_reference_length(ref))
     for x in iter:
-        print('%s,%s,%s,%s,%s,%s,"%s"'%(ref,str(x).split('\t')[0],aln[int(str(x).split('\t')[1])],samfile.get_reference_length(ref),strand[int(str(x).split("\t")[1])],str(x).split('\t')[3],get_cigar(str(x).split('\t')[5])),file=sourceFile)
+        print('%s,%s,%s,%s,%s,"%s"'%(ref,str(x).split('\t')[0],aln[int(str(x).split('\t')[1])],samfile.get_reference_length(ref),str(x).split('\t')[3],get_cigar(str(x).split('\t')[5])),file=sourceFile)
 
 sourceFile.close()
