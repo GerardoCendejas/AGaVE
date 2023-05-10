@@ -84,7 +84,7 @@ function Assembly(){
 
 	rnaspades.py -1 ../unmapped/$1_unmapped_1.fastq -2 ../unmapped/$1_unmapped_2.fastq -s ../unmapped/$1_unmapped_s.fastq -k 51 -o ./$1/ --threads 8 --memory 60 -k 31,53,75,91,115
 
-	mv ./$1/transcripts.fasta ./$1_contigs.fasta
+	mv ./$1/soft_filtered_transcripts.fasta ./$1_contigs.fasta
 
 	mv ./$1/*scaffolds.gfa ./$1_contigs.gfa
 
@@ -126,7 +126,7 @@ function AnnotatingContigs(){
 
 	printf  "\n###Annotating contigs mapped to viral genomes###\n\n"
 
-	mkdir 
+	mkdir annot
 
 	cd annot
 
