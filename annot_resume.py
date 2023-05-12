@@ -132,7 +132,7 @@ def get_mapped_len(x):
             
     mapped_len = 0
     
-    for i in range(1,len(num)):
+    for i in range(0,len(num)):
         
         if mapped[aligned[i]] == 1:
             mapped_len+=int(num[i])       
@@ -177,7 +177,7 @@ for genome in samfile.get_index_statistics():
 data = {"Virus":virus_name,"Genome":genomes,"MappedContigs":count,
         "GenomeLength":genome_len,"GenomeMappedLen":coverages_len,"GenomeCoverageIdx":coverages_per}
 data = pd.DataFrame(data,index=None)
-data=data.sort_values(by=['MappedContigs'],ascending=False)
+data=data.sort_values(by=['GenomeCoverageIdx'],ascending=False)
 
 data.to_csv(f"{sys.argv[2]}_ref_genome_maps.csv",index=False)
 
