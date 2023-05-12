@@ -84,7 +84,7 @@ function Assembly(){
 
 	rnaspades.py -1 ../unmapped/$1_unmapped_1.fastq -2 ../unmapped/$1_unmapped_2.fastq -s ../unmapped/$1_unmapped_s.fastq -k 51 -o ./$1/ --threads 8 --memory 60 -k 31,53,75,91,115
 
-	mv ./$1/soft_filtered_transcripts.fasta ./$1_contigs.fasta
+	mv ./$1/transcripts.fasta ./$1_contigs.fasta
 
 	mv ./$1/*scaffolds.gfa ./$1_contigs.gfa
 
@@ -148,7 +148,7 @@ function GenerateResults(){
 
 	cd results
 
-	python $1/annot_resume.py ../annot/$2/$2_mapped2virus.gbk $2 ../viralmap/$2_mapped2virus_sorted.bam
+	python $1/annot_resume.py ../annot/$2/$2_mapped2virus.gbk $2 ../viralmap/$2_mapped2virus_sorted.bam $1/virus.csv
 
 	mkdir images
 
