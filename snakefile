@@ -1,5 +1,6 @@
 genome_dir = "/labs/csbig/gerardo/genomes/human/STAR"
 virus_db = "/labs/csbig/gerardo/genomes/virus/virus.mmi"
+human_mimimap = "/labs/csbig/gerardo/genomes/human/human_genome.mmi"
 
 rule quality_control:
 	input:
@@ -71,8 +72,9 @@ rule virus_mapping:
 		v3 = "viralmap/{sample}_mapped2virus_sorted.bam"
 	shell:
 		"""
-		
-		minimap2 -ax splice --cs -C5 -t16 {virus_db} {input} > viralmap/{wildcards.sample}_aln.sam
+		printf  "\n###Mapping {wildcards.sample} assembled contigs to viral database###\n\n"
+
+		minimap2 -ax splice --cs -C5 -L -t16 {virus_db} {input} > viralmap/{wildcards.sample}_aln.sam
 
 		samtools view -b -F 4 viralmap/{wildcards.sample}_aln.sam > viralmap/{wildcards.sample}_mapped2virus.bam
 
@@ -88,17 +90,72 @@ rule virus_mapping:
 
 		"""
 
+rule human_mapping:
+	input:
+		"assembly/{sample}_contigs.fasta"
+	output:
+		v1 = "humanmap/{sample}_mapped2human.fastq",
+		v2 = "humanmap/{sample}_mapped2human.fasta",
+		v3 = "humanmap/{sample}_mapped2human_sorted.bam"
+	shell:
+		"""
+		printf  "\n###Mapping {wildcards.sample} assembled contigs to human genome###\n\n"
+
+		minimap2 -ax asm10 --cs -C5 -L -t16 {human_minimap} {input} > humanmap/{wildcards.sample}_aln.sam
+
+		samtools view -b -F 4 humanmap/{wildcards.sample}_aln.sam > humanmap/{wildcards.sample}_mapped2human.bam
+
+		bedtools bamtofastq -i viralmap/{wildcards.sample}_mapped2virus.bam -fq {output.v1}
+
+		sed -n '1~4s/^@/>/p;2~4p' {output.v1} > {output.v2}
+
+		samtools sort viralmap/{wildcards.sample}_mapped2virus.bam -o {output.v3}
+
+		samtools index -b {output.v3}
+
+		rm viralmap/*.sam viralmap/{wildcards.sample}_mapped2virus.bam
+
+		"""
+
 rule annotate_contigs:
 	input:
-		"viralmap/{sample}_mapped2virus.fasta"
+		"assembly/{sample}_contigs.fasta"
 	output:
-		"annot/{sample}/{sample}_mapped2virus.gbk"
+		"annot/{sample}/{sample}_contigs.gbk"
 	conda:
 		"envs/prokka.yaml"
 	shell:
 		"""
 		
+		printf  "\n###Annotating {wildcards.sample} assembled contigs with prokka###\n\n"
+
+
 		prokka --addgenes --outdir {wildcards.sample} --locustag {wildcards.sample} --kingdom Viruses --prefix {wildcards.sample}_mapped2virus --metagenome --cpus 8 --norrna --notrna --centre X --compliant {input}
 
 		"""
+
+rule results:
+	input:
+		f1 = "annot/{sample}/{sample}_contigs.gbk",
+		f2 = "viralmap/{sample}_mapped2virus_sorted.bam"
+	output:
+		r1 = "results/{sample}_all.fasta",
+		r2 = "results/{sample}_all_aa.fasta",
+		r3 = "results/{sample}_annotated.fasta",
+		r4 = "results/{sample}_annotated_aa.fasta",
+		r5 = "results/{sample}_annotated.csv",
+		r6 = "results/{sample}_ref_genome_maps.csv",
+		r7 = "results/{sample}_aln.csv"
+	conda:
+		"envs/results.yaml"
+	shell:
+		"""
+
+		printf  "\n###Generating result files###\n\n"
+
+
+		python $1/annot_resume.py ../annot/$2/$2_mapped2virus.gbk $2 ../viralmap/$2_mapped2virus_sorted.bam $1/virus.csv
+
+		"""
+
 
