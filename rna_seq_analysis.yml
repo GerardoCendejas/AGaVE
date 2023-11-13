@@ -1,4 +1,4 @@
-name: snakemake-tutorial
+name: rna_seq_analysis
 channels:
   - bioconda
   - conda-forge
