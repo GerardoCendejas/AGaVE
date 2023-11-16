@@ -79,7 +79,7 @@ rule contig_clustering:
 
 rule virus_mapping:
 	input:
-		"assembly/{sample}_contigs.fasta"
+		"clusters/{sample}_repr.fasta"
 	output:
 		v1 = "viralmap/{sample}_mapped2virus.fastq",
 		v2 = "viralmap/{sample}_mapped2virus.fasta",
@@ -108,7 +108,7 @@ rule virus_mapping:
 
 rule human_mapping:
 	input:
-		"assembly/{sample}_contigs.fasta"
+		"clusters/{sample}_repr.fasta"
 	output:
 		v1 = "humanmap/{sample}_mapped2human.fastq",
 		v2 = "humanmap/{sample}_mapped2human.fasta",
@@ -137,7 +137,7 @@ rule human_mapping:
 
 rule annotate_contigs:
 	input:
-		"assembly/{sample}_contigs.fasta"
+		"clusters/{sample}_repr.fasta"
 	output:
 		"annot/{sample}/{sample}_contigs.gbk"
 	conda:
