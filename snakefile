@@ -1,7 +1,3 @@
-genome_dir = "/labs/csbig/gerardo/genomes/human/STAR"
-virus_db = "/labs/csbig/gerardo/genomes/virus/virus.mmi"
-human_mimimap = "/labs/csbig/gerardo/genomes/human/human_genome.mmi"
-
 rule quality_control:
 	input:
 		r1 = "samples/{sample}_1.fastq",
@@ -26,12 +22,14 @@ rule host_mapping:
 	output:
 		u1 = "unmapped/{sample}_1.fastq",
 		u2 = "unmapped/{sample}_2.fastq"
+	params:
+		genome_dir = config["genome_dir"]
 	shell:
 		"""
 		
 		printf  "\n###Mapping paired reads of {wildcards.sample} to host###\n\n"
 
-		STAR --runThreadN 16 --genomeDir {genome_dir} --sjdbGTFfile {genome_dir}/*.gtf --sjdbOverhang 150 -- readFilesIn {input} --outSAMtype BAM SortedByCoordinate --outSAMstrandField intronMotif --outFileNamePrefix unmmaped/{wildcards.sample}_mapped --quantMode GeneCounts --outSAMunmapped Within
+		STAR --runThreadN 16 --genomeDir {params.genome_dir} --sjdbGTFfile {genome_dir}/*.gtf --sjdbOverhang 150 -- readFilesIn {input} --outSAMtype BAM SortedByCoordinate --outSAMstrandField intronMotif --outFileNamePrefix unmmaped/{wildcards.sample}_mapped --quantMode GeneCounts --outSAMunmapped Within
 
 		mv unmapped/{wildcards.sample}_mapped*.bam unmapped/{wildcards.sample}_mapped.bam
 
@@ -70,11 +68,13 @@ rule virus_mapping:
 		v1 = "viralmap/{sample}_mapped2virus.fastq",
 		v2 = "viralmap/{sample}_mapped2virus.fasta",
 		v3 = "viralmap/{sample}_mapped2virus_sorted.bam"
+	params:
+		virus_db = config["virus_db"]
 	shell:
 		"""
 		printf  "\n###Mapping {wildcards.sample} assembled contigs to viral database###\n\n"
 
-		minimap2 -ax splice --cs -C5 -L -t16 {virus_db} {input} > viralmap/{wildcards.sample}_aln.sam
+		minimap2 -ax splice --cs -C5 -L -t16 {params.virus_db} {input} > viralmap/{wildcards.sample}_aln.sam
 
 		samtools view -b -F 4 viralmap/{wildcards.sample}_aln.sam > viralmap/{wildcards.sample}_mapped2virus.bam
 
@@ -97,11 +97,13 @@ rule human_mapping:
 		v1 = "humanmap/{sample}_mapped2human.fastq",
 		v2 = "humanmap/{sample}_mapped2human.fasta",
 		v3 = "humanmap/{sample}_mapped2human_sorted.bam"
+	params:
+		human_minimap = config["human_minimap"]
 	shell:
 		"""
 		printf  "\n###Mapping {wildcards.sample} assembled contigs to human genome###\n\n"
 
-		minimap2 -ax asm10 --cs -C5 -L -t16 {human_minimap} {input} > humanmap/{wildcards.sample}_aln.sam
+		minimap2 -ax asm10 --cs -C5 -L -t16 {params.human_minimap} {input} > humanmap/{wildcards.sample}_aln.sam
 
 		samtools view -b -F 4 humanmap/{wildcards.sample}_aln.sam > humanmap/{wildcards.sample}_mapped2human.bam
 
