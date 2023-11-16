@@ -61,6 +61,22 @@ rule assembly:
 
 		"""
 
+rule contig_clustering:
+	input:
+		"assembly/{sample}_contigs.fasta"
+	output:
+		"clusters/{sample}_repr.fasta"
+	shell:
+		"""
+		
+		printf  "\n###Getting representative sequences from assembled contigs of {wildcards.sample} using CD-HIT###\n\n"
+
+		cd-hit-est -i {input} -o clusters/{wildcards.sample} -c 0.95 -n 8
+
+		mv clusters/{wildcards.sample} {output}
+	
+		"""
+
 rule virus_mapping:
 	input:
 		"assembly/{sample}_contigs.fasta"
