@@ -18,9 +18,16 @@ viruses_file=sys.argv[4]
 
 records = list(SeqIO.parse(sys.argv[1], "genbank"))
 
+# outdir
+
+outdir = sys.argv[5]
+
+if outdir[-1]!="/":
+    outdir.append("/")
+
 # Escribir archivo fasta para todos los ORF detectados
 
-sourceFile = open(f'results/{sys.argv[2]}_all.fasta', 'w')
+sourceFile = open(f'{outdir}{sys.argv[2]}_all.fasta', 'w')
 
 for record in records:
     for feature in record.features:
@@ -31,7 +38,7 @@ sourceFile.close()
 
 # Escribir archivo fasta con secuencias de AMINOACIDOS de todos los ORF detectados
 
-sourceFile = open(f'results/{sys.argv[2]}_all_aa.fasta', 'w')
+sourceFile = open(f'{outdir}{sys.argv[2]}_all_aa.fasta', 'w')
 
 for record in records:
     for feature in record.features:
@@ -42,7 +49,7 @@ sourceFile.close()
 
 # Escribir archivo fasta con secuencias con anotacion diferente a hypothetical protein
 
-sourceFile = open(f'results/{sys.argv[2]}_annotated.fasta', 'w')
+sourceFile = open(f'{outdir}{sys.argv[2]}_annotated.fasta', 'w')
 
 for record in records:
     for feature in record.features:
@@ -53,7 +60,7 @@ sourceFile.close()
 
 # Escribir archivo fasta con secuencias de AMINOACIDOS con anotacion diferente a hypothetical protein
 
-sourceFile = open(f'results/{sys.argv[2]}_annotated_aa.fasta', 'w')
+sourceFile = open(f'{outdir}{sys.argv[2]}_annotated_aa.fasta', 'w')
 
 for record in records:
     for feature in record.features:
@@ -66,7 +73,7 @@ sourceFile.close()
 
 p = re.compile(r'L\wC\wE')
 
-sourceFile = open(f'results/{sys.argv[2]}_annotated.csv', 'w')
+sourceFile = open(f'{outdir}{sys.argv[2]}_annotated.csv', 'w')
 
 print("Contig,LocusTag,ContigLen,LocusLen,ProteinLen,Product,Similar2,LXCXE",file=sourceFile)
 
@@ -179,11 +186,11 @@ data = {"Virus":virus_name,"Genome":genomes,"MappedContigs":count,
 data = pd.DataFrame(data,index=None)
 data=data.sort_values(by=['GenomeCoverageIdx'],ascending=False)
 
-data.to_csv(f"{sys.argv[2]}_ref_genome_maps.csv",index=False)
+data.to_csv(f"{outdir}{sys.argv[2]}_ref_genome_maps.csv",index=False)
 
 ### Creando archivo de información de alineamiento.
 
-sourceFile = open(f'./{sys.argv[2]}_aln.csv', 'w')
+sourceFile = open(f'{outdir}{sys.argv[2]}_aln.csv', 'w')
 
 for i in range(0,len(samfile.get_index_statistics()),1):
     if samfile.get_reference_name(i).split(".")[0] in viruses.index:

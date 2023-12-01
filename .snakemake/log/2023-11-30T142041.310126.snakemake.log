@@ -1,0 +1,3 @@
+KeyError in file /home/gerardo/Documentos/Gera/Taller/Proyecto/repo/snakefile, line 26:
+'genome_dir'
+  File "/home/gerardo/Documentos/Gera/Taller/Proyecto/repo/snakefile", line 26, in <module>

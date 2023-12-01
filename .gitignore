@@ -1,7 +1,9 @@
 samples/
 clean/
 unmapped/
+annot/
 assembly/
 viralmap/
 humanmap/
 results/
+./snakemake/

@@ -1,3 +1,5 @@
+configfile: "./config.yml"
+
 rule quality_control:
 	input:
 		r1 = "samples/{sample}_1.fastq",
@@ -61,6 +63,35 @@ rule assembly:
 
 		"""
 
+rule virus_mapping:
+	input:
+		"assembly/{sample}_contigs.fasta"
+	output:
+		v1 = "viralmap/contig/{sample}_mapped2virus.fastq",
+		v2 = "viralmap/contig/{sample}_mapped2virus.fasta",
+		v3 = "viralmap/contig/{sample}_mapped2virus_sorted.bam"
+	params:
+		virus_db = config["virus_db"]
+	shell:
+		"""
+		printf  "\n###Mapping {wildcards.sample} assembled contigs to viral database###\n\n"
+
+		minimap2 -ax splice --cs -C5 -L -t16 {params.virus_db} {input} > viralmap/contig/{wildcards.sample}_aln.sam
+
+		samtools view -b -F 4 viralmap/contig/{wildcards.sample}_aln.sam > viralmap/contig/{wildcards.sample}_mapped2virus.bam
+
+		bedtools bamtofastq -i viralmap/contig/{wildcards.sample}_mapped2virus.bam -fq {output.v1}
+
+		sed -n '1~4s/^@/>/p;2~4p' {output.v1} > {output.v2}
+
+		samtools sort viralmap/contig/{wildcards.sample}_mapped2virus.bam -o {output.v3}
+
+		samtools index -b {output.v3}
+
+		rm viralmap/contig/*.sam viralmap/contig/{wildcards.sample}_mapped2virus.bam
+
+		"""
+
 rule contig_clustering:
 	input:
 		"assembly/{sample}_contigs.fasta"
@@ -77,38 +108,38 @@ rule contig_clustering:
 	
 		"""
 
-rule virus_mapping:
+rule virus_mapping_clus:
 	input:
 		"clusters/{sample}_repr.fasta"
 	output:
-		v1 = "viralmap/{sample}_mapped2virus.fastq",
-		v2 = "viralmap/{sample}_mapped2virus.fasta",
-		v3 = "viralmap/{sample}_mapped2virus_sorted.bam"
+		v1 = "viralmap/cluster/{sample}_mapped2virus.fastq",
+		v2 = "viralmap/cluster/{sample}_mapped2virus.fasta",
+		v3 = "viralmap/cluster/{sample}_mapped2virus_sorted.bam"
 	params:
 		virus_db = config["virus_db"]
 	shell:
 		"""
 		printf  "\n###Mapping {wildcards.sample} assembled contigs to viral database###\n\n"
 
-		minimap2 -ax splice --cs -C5 -L -t16 {params.virus_db} {input} > viralmap/{wildcards.sample}_aln.sam
+		minimap2 -ax splice --cs -C5 -L -t16 {params.virus_db} {input} > viralmap/cluster/{wildcards.sample}_aln.sam
 
-		samtools view -b -F 4 viralmap/{wildcards.sample}_aln.sam > viralmap/{wildcards.sample}_mapped2virus.bam
+		samtools view -b -F 4 viralmap/cluster/{wildcards.sample}_aln.sam > viralmap/cluster/{wildcards.sample}_mapped2virus.bam
 
-		bedtools bamtofastq -i viralmap/{wildcards.sample}_mapped2virus.bam -fq {output.v1}
+		bedtools bamtofastq -i viralmap/cluster/{wildcards.sample}_mapped2virus.bam -fq {output.v1}
 
 		sed -n '1~4s/^@/>/p;2~4p' {output.v1} > {output.v2}
 
-		samtools sort viralmap/{wildcards.sample}_mapped2virus.bam -o {output.v3}
+		samtools sort viralmap/cluster/{wildcards.sample}_mapped2virus.bam -o {output.v3}
 
 		samtools index -b {output.v3}
 
-		rm viralmap/*.sam viralmap/{wildcards.sample}_mapped2virus.bam
+		rm viralmap/cluster/*.sam viralmap/cluster/{wildcards.sample}_mapped2virus.bam
 
 		"""
 
-rule human_mapping:
+rule host_mapping_2:
 	input:
-		"clusters/{sample}_repr.fasta"
+		"assembly/{sample}_contigs.fasta"
 	output:
 		v1 = "humanmap/{sample}_mapped2human.fastq",
 		v2 = "humanmap/{sample}_mapped2human.fasta",
@@ -137,9 +168,9 @@ rule human_mapping:
 
 rule annotate_contigs:
 	input:
-		"clusters/{sample}_repr.fasta"
+		"assembly/{sample}_contigs.fasta"
 	output:
-		"annot/{sample}/{sample}_contigs.gbk"
+		"annot/contig/{sample}_contigs.gbk"
 	conda:
 		"envs/prokka.yaml"
 	shell:
@@ -148,32 +179,68 @@ rule annotate_contigs:
 		printf  "\n###Annotating {wildcards.sample} assembled contigs with prokka###\n\n"
 
 
-		prokka --addgenes --outdir {wildcards.sample} --locustag {wildcards.sample} --kingdom Viruses --prefix {wildcards.sample}_mapped2virus --metagenome --cpus 8 --norrna --notrna --centre X --compliant {input}
+		prokka --addgenes --outdir annot/contig/ --locustag {wildcards.sample} --kingdom Viruses --prefix {wildcards.sample}_mapped2virus --metagenome --cpus 8 --norrna --notrna --centre X --compliant {input}
+
+		"""
+
+rule annotate_clusters:
+	input:
+		"clusters/{sample}_repr.fasta"
+	output:
+		"annot/cluster/{sample}_contigs.gbk"
+	conda:
+		"envs/prokka.yaml"
+	shell:
+		"""
+		
+		printf  "\n###Annotating {wildcards.sample} assembled contigs with prokka###\n\n"
+
+
+		prokka --addgenes --outdir annot/cluster/ --locustag {wildcards.sample} --kingdom Viruses --prefix {wildcards.sample}_mapped2virus --metagenome --cpus 8 --norrna --notrna --centre X --compliant {input}
 
 		"""
 
 rule results:
 	input:
-		f1 = "annot/{sample}/{sample}_contigs.gbk",
-		f2 = "viralmap/{sample}_mapped2virus_sorted.bam"
+		f1 = "annot/contig/{sample}_contigs.gbk",
+		f2 = "viralmap/contig/{sample}_mapped2virus_sorted.bam",
+		f3 = "annot/cluster/{sample}_contigs.gbk",
+		f4 = "viralmap/cluster/{sample}_mapped2virus_sorted.bam"
 	output:
-		r1 = "results/{sample}_all.fasta",
-		r2 = "results/{sample}_all_aa.fasta",
-		r3 = "results/{sample}_annotated.fasta",
-		r4 = "results/{sample}_annotated_aa.fasta",
-		r5 = "results/{sample}_annotated.csv",
-		r6 = "results/{sample}_ref_genome_maps.csv",
-		r7 = "results/{sample}_aln.csv"
+		r1 = "results/contig/{sample}_aln.csv",
+		r2 = "results/cluster/{sample}_aln.csv"
+	shell:
+		"""
+
+		printf  "\n###Generating result files for contigs###\n\n"
+
+
+		python ./annot_resume.py {input.f1} {wildcards.sample} {input.f2} ./virus.csv results/contig/
+
+		printf  "\n###Generating result files for clusters###\n\n"
+
+		python ./annot_resume.py {input.f3} {wildcards.sample} {input.f4} ./virus.csv results/cluster/
+
+		"""
+
+rule plot_results:
+	input:
+		p1 = "results/contig/{sample}_aln.csv",
+		p2 = "results/cluster/{sample}_aln.csv"
+	log:
+		"{sample}_log.a"
 	conda:
 		"envs/results.yaml"
 	shell:
 		"""
 
-		printf  "\n###Generating result files###\n\n"
+		printf  "\n###Generating result plots for contigs###\n\n"
 
+		Rscript --vanilla Plot.R {input.p1}  results/contig/plots/
 
-		python ./annot_resume.py {input.f1} {wildcards.sample} {input.f2} ./virus.csv
+		printf  "\n###Generating result plots for clusters###\n\n"
+
+		Rscript --vanilla Plot.R {input.p2}  results/cluster/plots/
+
 
 		"""
-
-

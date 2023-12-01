@@ -6,6 +6,8 @@ library(ggplot2)
 
 data <- read.csv(args[1], header=FALSE)
 
+outdir <- args[2]
+
 plot_ref <- function(x){
   g <- ggplot(data=x)+geom_rect(data=x, mapping=aes(xmin=0, xmax=V4, ymin=-0.15, ymax=0.15),
                            color="black",fill="red")+
@@ -125,7 +127,7 @@ for(i in 1:length(lev)){
   
   g_temp <- plot_aln(temp)
   
-  ggsave(paste(lev[i],"_mapped.jpg",sep=""),g_temp,width = 1200,height = 800,units = "px",dpi=200)
+  ggsave(paste(outdir,lev[i],"_mapped.jpg",sep=""),g_temp,width = 1200,height = 800,units = "px",dpi=200)
   
 }
 

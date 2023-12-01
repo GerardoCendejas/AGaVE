@@ -1,3 +1,3 @@
 genome_dir : "/labs/csbig/gerardo/genomes/human/STAR"
 virus_db : "/labs/csbig/gerardo/genomes/virus/virus.mmi"
-human_mimimap : "/labs/csbig/gerardo/genomes/human/human_genome.mmi"
+human_minimap : "/labs/csbig/gerardo/genomes/human/human_genome.mmi"

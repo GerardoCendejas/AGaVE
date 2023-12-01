@@ -1,0 +1,4 @@
+Building DAG of jobs...
+WildcardError in rule plot_results in file /home/gerardo/Documentos/Gera/Taller/Proyecto/repo/snakefile, line 226:
+Wildcards in input files cannot be determined from output files:
+'sample'

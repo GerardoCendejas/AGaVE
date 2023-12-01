@@ -1,0 +1,26 @@
+Building DAG of jobs...
+Using shell: /usr/bin/bash
+Provided cores: 4
+Rules claiming more threads will be scaled down.
+Conda environments: ignored
+Job stats:
+job             count
+------------  -------
+plot_results        1
+total               1
+
+Select jobs to execute...
+
+[Thu Nov 30 22:16:33 2023]
+rule plot_results:
+    input: results/contig/prueba_aln.csv, results/cluster/prueba_aln.csv
+    log: prueba_log.a
+    jobid: 0
+    reason: Rules with a run or shell declaration but no output are always executed.
+    wildcards: sample=prueba
+    resources: tmpdir=/tmp
+
+[Thu Nov 30 22:16:49 2023]
+Finished job 0.
+1 of 1 steps (100%) done
+Complete log: .snakemake/log/2023-11-30T221633.686537.snakemake.log
