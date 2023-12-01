@@ -1,3 +1,0 @@
-KeyError in file /home/gerardo/Documentos/Gera/Taller/Proyecto/repo/snakefile, line 119:
-'human_minimap'
-  File "/home/gerardo/Documentos/Gera/Taller/Proyecto/repo/snakefile", line 119, in <module>
