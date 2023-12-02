@@ -119,6 +119,32 @@ plot_aln <- function(df){
   
 }
 
+plot_annot <- function(g,x,ypos){
+  annot <-  strsplit(x[[7]],split=",")[[1]]
+  
+  #g <- g+geom_segment(aes_string(x=x1,xend=x2,y=ypos,yend=ypos))
+  
+  g <- g+annotate("segment", x = x[[5]]+as.integer(annot[2])-1, xend = x[[5]]+as.integer(annot[3]),
+                  y = ypos, yend = ypos,
+                  arrow = arrow(ends = "both", angle = 90, length = unit(.1,"cm")))+
+    geom_text(aes(x = x[[5]]+((as.integer(annot[2])-1+as.integer(annot[3]))/2),y=ypos-0.125,label=annot[1]))
+  
+  return(g)
+}
+
+plot_aln_annot <- function(df){
+  g <- plot_ref(df[1,])
+  
+  for(i in 1:dim(df)[1]){
+    g <- plot_contig(g,df[i,],i*(-0.6))
+    g <- plot_annot(g,df[i,],i*(-0.6)-0.25)
+  }
+  
+  return(g)
+  
+}
+
+
 lev <- levels(as.factor(data$V1))
 
 for(i in 1:length(lev)){
@@ -126,8 +152,12 @@ for(i in 1:length(lev)){
   temp <- data[which(data[,1]==lev[i]),]
   
   g_temp <- plot_aln(temp)
+
+  g_temp_annot <- plot_aln_annot(temp)
   
   ggsave(paste(outdir,lev[i],"_mapped.jpg",sep=""),g_temp,width = 1200,height = 800,units = "px",dpi=200)
+
+  ggsave(paste(outdir,lev[i],"_mapped_annot.jpg",sep=""),g_temp_annot,width = 1200,height = 800,units = "px",dpi=200)
   
 }
 

@@ -69,6 +69,9 @@ rule annotate_contigs:
 	output:
 		"annot/contig/{sample}_contigs.gbk",
 		"annot/contig/{sample}_contigs.fna"
+	params:
+		outdir = "annot/contig/",
+		prefix = "contigs"
 	conda:
 		"envs/prokka.yaml"
 	shell:
@@ -77,7 +80,7 @@ rule annotate_contigs:
 		printf  "\n###Annotating {wildcards.sample} assembled contigs with prokka###\n\n"
 
 
-		prokka --addgenes --outdir annot/contig/ --locustag {wildcards.sample} --kingdom Viruses --prefix {wildcards.sample}_contigs --metagenome --mincontiglen 1 --cpus 8 --norrna --notrna {input}
+		prokka --addgenes --outdir {params.outdir} --locustag {wildcards.sample} --kingdom Viruses --prefix {wildcards.sample}_{params.prefix} --metagenome --mincontiglen 1 --cpus 8 --norrna --notrna {input}
 
 		"""
 
@@ -97,23 +100,15 @@ rule contig_clustering:
 	
 		"""
 
-rule annotate_clusters:
+use rule annotate_contigs as annotate_clusters with:
 	input:
 		"clusters/{sample}_repr.fasta"
 	output:
 		"annot/cluster/{sample}_clusters.gbk",
 		"annot/cluster/{sample}_clusters.fna"
-	conda:
-		"envs/prokka.yaml"
-	shell:
-		"""
-		
-		printf  "\n###Annotating {wildcards.sample} assembled contigs with prokka###\n\n"
-
-
-		prokka --addgenes --outdir annot/cluster/ --locustag {wildcards.sample} --kingdom Viruses --prefix {wildcards.sample}_clusters --metagenome --mincontiglen 1 --cpus 8 --norrna --notrna {input}
-
-		"""
+	params:
+		outdir = "annot/cluster/",
+		prefix = "clusters"
 
 rule virus_mapping:
 	input:
@@ -123,29 +118,31 @@ rule virus_mapping:
 		v2 = "viralmap/contig/{sample}_mapped2virus.fasta",
 		v3 = "viralmap/contig/{sample}_mapped2virus_sorted.bam"
 	params:
-		virus_db = config["virus_db"]
+		database = config["virus_db"],
+		org = "viruses",
+		outdir = "viralmap/contig/",
+		tag = "mapped2virus"
 	shell:
 		"""
-		printf  "\n###Mapping {wildcards.sample} assembled contigs to viral database###\n\n"
+		printf  "\n###Mapping {wildcards.sample} assembled contigs to {params.org} database###\n\n"
 
-		minimap2 -ax splice --cs -C5 -L -t16 {params.virus_db} {input} > viralmap/contig/{wildcards.sample}_aln.sam
+		minimap2 -ax splice --cs -C5 -L -t16 {params.database} {input} > {params.outdir}{wildcards.sample}_aln.sam
 
-		samtools view -b -F 4 viralmap/contig/{wildcards.sample}_aln.sam > viralmap/contig/{wildcards.sample}_mapped2virus.bam
+		samtools view -b -F 4 {params.outdir}{wildcards.sample}_aln.sam > {params.outdir}{wildcards.sample}_{params.tag}.bam
 
-		bedtools bamtofastq -i viralmap/contig/{wildcards.sample}_mapped2virus.bam -fq {output.v1}
+		bedtools bamtofastq -i {params.outdir}{wildcards.sample}_{params.tag}.bam -fq {output.v1}
 
 		sed -n '1~4s/^@/>/p;2~4p' {output.v1} > {output.v2}
 
-		samtools sort viralmap/contig/{wildcards.sample}_mapped2virus.bam -o {output.v3}
+		samtools sort {params.outdir}{wildcards.sample}_{params.tag}.bam -o {output.v3}
 
 		samtools index -b {output.v3}
 
-		rm viralmap/contig/*.sam viralmap/contig/{wildcards.sample}_mapped2virus.bam
+		rm {params.outdir}*.sam {params.outdir}{wildcards.sample}_{params.tag}.bam
 
 		"""
 
-
-rule virus_mapping_clus:
+use rule virus_mapping as virus_mapping_clus with:
 	input:
 		"annot/cluster/{sample}_clusters.fna"
 	output:
@@ -153,28 +150,12 @@ rule virus_mapping_clus:
 		v2 = "viralmap/cluster/{sample}_mapped2virus.fasta",
 		v3 = "viralmap/cluster/{sample}_mapped2virus_sorted.bam"
 	params:
-		virus_db = config["virus_db"]
-	shell:
-		"""
-		printf  "\n###Mapping {wildcards.sample} assembled contigs to viral database###\n\n"
+		database = config["virus_db"],
+		org = "viruses",
+		outdir = "viralmap/cluster/",
+		tag = "mapped2virus"
 
-		minimap2 -ax splice --cs -C5 -L -t16 {params.virus_db} {input} > viralmap/cluster/{wildcards.sample}_aln.sam
-
-		samtools view -b -F 4 viralmap/cluster/{wildcards.sample}_aln.sam > viralmap/cluster/{wildcards.sample}_mapped2virus.bam
-
-		bedtools bamtofastq -i viralmap/cluster/{wildcards.sample}_mapped2virus.bam -fq {output.v1}
-
-		sed -n '1~4s/^@/>/p;2~4p' {output.v1} > {output.v2}
-
-		samtools sort viralmap/cluster/{wildcards.sample}_mapped2virus.bam -o {output.v3}
-
-		samtools index -b {output.v3}
-
-		rm viralmap/cluster/*.sam viralmap/cluster/{wildcards.sample}_mapped2virus.bam
-
-		"""
-
-rule host_mapping_2:
+use rule virus_mapping as host_mapping_2 with:
 	input:
 		"annot/contig/{sample}_contigs.fna"
 	output:
@@ -182,49 +163,39 @@ rule host_mapping_2:
 		v2 = "humanmap/{sample}_mapped2human.fasta",
 		v3 = "humanmap/{sample}_mapped2human_sorted.bam"
 	params:
-		human_minimap = config["human_minimap"]
-	shell:
-		"""
-		printf  "\n###Mapping {wildcards.sample} assembled contigs to human genome###\n\n"
-
-		minimap2 -ax asm10 --cs -C5 -L -t16 {params.human_minimap} {input} > humanmap/{wildcards.sample}_aln.sam
-
-		samtools view -b -F 4 humanmap/{wildcards.sample}_aln.sam > humanmap/{wildcards.sample}_mapped2human.bam
-
-		bedtools bamtofastq -i viralmap/{wildcards.sample}_mapped2virus.bam -fq {output.v1}
-
-		sed -n '1~4s/^@/>/p;2~4p' {output.v1} > {output.v2}
-
-		samtools sort viralmap/{wildcards.sample}_mapped2virus.bam -o {output.v3}
-
-		samtools index -b {output.v3}
-
-		rm viralmap/*.sam viralmap/{wildcards.sample}_mapped2virus.bam
-
-		"""
+		database = config["human_minimap"],
+		org = "human",
+		outdir = "humanmap",
+		tag = "mapped2human"
 
 
 rule results:
 	input:
 		f1 = "annot/contig/{sample}_contigs.gbk",
-		f2 = "viralmap/contig/{sample}_mapped2virus_sorted.bam",
-		f3 = "annot/cluster/{sample}_clusters.gbk",
-		f4 = "viralmap/cluster/{sample}_mapped2virus_sorted.bam"
+		f2 = "viralmap/contig/{sample}_mapped2virus_sorted.bam"
 	output:
-		r1 = "results/contig/{sample}_aln.csv",
-		r2 = "results/cluster/{sample}_aln.csv"
+		r1 = "results/contig/{sample}_aln.csv"
+	params:
+		outdir = "results/contig",
+		tag = "contigs"
 	shell:
 		"""
 
-		printf  "\n###Generating result files for contigs###\n\n"
+		printf  "\n###Generating result files for {params.tag}###\n\n"
 
-		python scripts/annot_resume.py {input.f1} {wildcards.sample} {input.f2} ./virus.csv results/contig/
-
-		printf  "\n###Generating result files for clusters###\n\n"
-
-		python scripts/annot_resume.py {input.f3} {wildcards.sample} {input.f4} ./virus.csv results/cluster/
+		python scripts/annot_resume.py {input.f1} {wildcards.sample} {input.f2} ./virus.csv {params.outdir}
 
 		"""
+
+use rule results as results_cluster with:
+	input:
+		f1 = "annot/cluster/{sample}_contigs.gbk",
+		f2 = "viralmap/cluster/{sample}_mapped2virus_sorted.bam"
+	output:
+		r1 = "results/cluster/{sample}_aln.csv"
+	params:
+		outdir = "results/cluster",
+		tag = "clusters"
 
 rule plot_results:
 	input:

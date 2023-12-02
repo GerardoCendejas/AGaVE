@@ -23,7 +23,7 @@ records = list(SeqIO.parse(sys.argv[1], "genbank"))
 outdir = sys.argv[5]
 
 if outdir[-1]!="/":
-    outdir.append("/")
+    outdir = outdir+"/"
 
 # Escribir archivo fasta para todos los ORF detectados
 
@@ -203,3 +203,32 @@ for i in range(0,len(samfile.get_index_statistics()),1):
         print('%s,%s,%s,%s,%s,"%s"'%(name,str(x).split('\t')[0],aln[int(str(x).split('\t')[1])],samfile.get_reference_length(ref),str(x).split('\t')[3],get_cigar(str(x).split('\t')[5])),file=sourceFile)
 
 sourceFile.close()
+
+# Adding information about annotations
+
+file = pd.read_csv(f'{outdir}{sys.argv[2]}_aln.csv',header=None)
+
+def get_annot_from_contig(record):
+    res = []
+    for feature in record.features:
+        if feature.type=="CDS":
+            try:
+                gene = feature.qualifiers["gene"][0]
+            except:
+                gene = feature.qualifiers["product"][0].split(",")[0]
+            res.extend([gene,str(feature.location.start+1),str(feature.location.end)])
+    return(",".join(res))
+
+annot = {}
+
+for record in records:
+    annot[record.name]=get_annot_from_contig(record)
+
+annot_col = []
+
+for contig in file[1]:
+    annot_col.append(annot[contig])
+
+file[6] = annot_col
+
+file.to_csv(f'{outdir}{sys.argv[2]}_aln.csv',index=False,header=None)
