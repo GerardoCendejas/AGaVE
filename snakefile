@@ -63,9 +63,61 @@ rule assembly:
 
 		"""
 
-rule virus_mapping:
+rule annotate_contigs:
 	input:
 		"assembly/{sample}_contigs.fasta"
+	output:
+		"annot/contig/{sample}_contigs.gbk",
+		"annot/contig/{sample}_contigs.fna"
+	conda:
+		"envs/prokka.yaml"
+	shell:
+		"""
+		
+		printf  "\n###Annotating {wildcards.sample} assembled contigs with prokka###\n\n"
+
+
+		prokka --addgenes --outdir annot/contig/ --locustag {wildcards.sample} --kingdom Viruses --prefix {wildcards.sample}_contigs --metagenome --mincontiglen 1 --cpus 8 --norrna --notrna {input}
+
+		"""
+
+rule contig_clustering:
+	input:
+		"assembly/{sample}_contigs.fasta"
+	output:
+		"clusters/{sample}_repr.fasta"
+	shell:
+		"""
+		
+		printf  "\n###Getting representative sequences from assembled contigs of {wildcards.sample} using CD-HIT###\n\n"
+
+		cd-hit-est -i {input} -o clusters/{wildcards.sample} -c 0.95 -n 8
+
+		mv clusters/{wildcards.sample} {output}
+	
+		"""
+
+rule annotate_clusters:
+	input:
+		"clusters/{sample}_repr.fasta"
+	output:
+		"annot/cluster/{sample}_clusters.gbk",
+		"annot/cluster/{sample}_clusters.fna"
+	conda:
+		"envs/prokka.yaml"
+	shell:
+		"""
+		
+		printf  "\n###Annotating {wildcards.sample} assembled contigs with prokka###\n\n"
+
+
+		prokka --addgenes --outdir annot/cluster/ --locustag {wildcards.sample} --kingdom Viruses --prefix {wildcards.sample}_clusters --metagenome --mincontiglen 1 --cpus 8 --norrna --notrna {input}
+
+		"""
+
+rule virus_mapping:
+	input:
+		"annot/contig/{sample}_contigs.fna"
 	output:
 		v1 = "viralmap/contig/{sample}_mapped2virus.fastq",
 		v2 = "viralmap/contig/{sample}_mapped2virus.fasta",
@@ -92,25 +144,10 @@ rule virus_mapping:
 
 		"""
 
-rule contig_clustering:
-	input:
-		"assembly/{sample}_contigs.fasta"
-	output:
-		"clusters/{sample}_repr.fasta"
-	shell:
-		"""
-		
-		printf  "\n###Getting representative sequences from assembled contigs of {wildcards.sample} using CD-HIT###\n\n"
-
-		cd-hit-est -i {input} -o clusters/{wildcards.sample} -c 0.95 -n 8
-
-		mv clusters/{wildcards.sample} {output}
-	
-		"""
 
 rule virus_mapping_clus:
 	input:
-		"clusters/{sample}_repr.fasta"
+		"annot/cluster/{sample}_clusters.fna"
 	output:
 		v1 = "viralmap/cluster/{sample}_mapped2virus.fastq",
 		v2 = "viralmap/cluster/{sample}_mapped2virus.fasta",
@@ -139,7 +176,7 @@ rule virus_mapping_clus:
 
 rule host_mapping_2:
 	input:
-		"assembly/{sample}_contigs.fasta"
+		"annot/contig/{sample}_contigs.fna"
 	output:
 		v1 = "humanmap/{sample}_mapped2human.fastq",
 		v2 = "humanmap/{sample}_mapped2human.fasta",
@@ -166,45 +203,12 @@ rule host_mapping_2:
 
 		"""
 
-rule annotate_contigs:
-	input:
-		"assembly/{sample}_contigs.fasta"
-	output:
-		"annot/contig/{sample}_contigs.gbk"
-	conda:
-		"envs/prokka.yaml"
-	shell:
-		"""
-		
-		printf  "\n###Annotating {wildcards.sample} assembled contigs with prokka###\n\n"
-
-
-		prokka --addgenes --outdir annot/contig/ --locustag {wildcards.sample} --kingdom Viruses --prefix {wildcards.sample}_mapped2virus --metagenome --cpus 8 --norrna --notrna --centre X --compliant {input}
-
-		"""
-
-rule annotate_clusters:
-	input:
-		"clusters/{sample}_repr.fasta"
-	output:
-		"annot/cluster/{sample}_contigs.gbk"
-	conda:
-		"envs/prokka.yaml"
-	shell:
-		"""
-		
-		printf  "\n###Annotating {wildcards.sample} assembled contigs with prokka###\n\n"
-
-
-		prokka --addgenes --outdir annot/cluster/ --locustag {wildcards.sample} --kingdom Viruses --prefix {wildcards.sample}_mapped2virus --metagenome --cpus 8 --norrna --notrna --centre X --compliant {input}
-
-		"""
 
 rule results:
 	input:
 		f1 = "annot/contig/{sample}_contigs.gbk",
 		f2 = "viralmap/contig/{sample}_mapped2virus_sorted.bam",
-		f3 = "annot/cluster/{sample}_contigs.gbk",
+		f3 = "annot/cluster/{sample}_clusters.gbk",
 		f4 = "viralmap/cluster/{sample}_mapped2virus_sorted.bam"
 	output:
 		r1 = "results/contig/{sample}_aln.csv",
@@ -214,12 +218,11 @@ rule results:
 
 		printf  "\n###Generating result files for contigs###\n\n"
 
-
-		python ./annot_resume.py {input.f1} {wildcards.sample} {input.f2} ./virus.csv results/contig/
+		python scripts/annot_resume.py {input.f1} {wildcards.sample} {input.f2} ./virus.csv results/contig/
 
 		printf  "\n###Generating result files for clusters###\n\n"
 
-		python ./annot_resume.py {input.f3} {wildcards.sample} {input.f4} ./virus.csv results/cluster/
+		python scripts/annot_resume.py {input.f3} {wildcards.sample} {input.f4} ./virus.csv results/cluster/
 
 		"""
 
@@ -236,11 +239,11 @@ rule plot_results:
 
 		printf  "\n###Generating result plots for contigs###\n\n"
 
-		Rscript --vanilla Plot.R {input.p1}  results/contig/plots/
+		Rscript --vanilla scripts/Plot.R {input.p1}  results/contig/plots/
 
 		printf  "\n###Generating result plots for clusters###\n\n"
 
-		Rscript --vanilla Plot.R {input.p2}  results/cluster/plots/
+		Rscript --vanilla scripts/Plot.R {input.p2}  results/cluster/plots/
 
 
 		"""

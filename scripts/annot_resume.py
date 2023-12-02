@@ -8,7 +8,7 @@ import pysam
 
 import re
 
-#import pandas as pd
+import pandas as pd
 
 # Load gbk file
 

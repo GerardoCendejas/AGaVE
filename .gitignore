@@ -6,3 +6,4 @@ assembly/
 viralmap/
 humanmap/
 results/
+.snakemake/
