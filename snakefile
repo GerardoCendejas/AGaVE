@@ -24,8 +24,7 @@ rule host_mapping:
 		c1 = "clean/{sample}_1P.fastq",
 		c2 = "clean/{sample}_2P.fastq"
 	output:
-		u1 = "unmapped/{sample}_1.fastq",
-		u2 = "unmapped/{sample}_2.fastq"
+		"unmapped/{sample}_mappedAligned.sortedByCoord.out.bam"
 	params:
 		genome_dir = config["genome_dir"],
 		cores = config["cores"]
@@ -36,13 +35,23 @@ rule host_mapping:
 
 		STAR --runThreadN {params.cores} --genomeDir {params.genome_dir} --sjdbGTFfile {params.genome_dir}/*.gtf --sjdbOverhang 150 -- readFilesIn {input} --outSAMtype BAM SortedByCoordinate --outSAMstrandField intronMotif --outFileNamePrefix unmmaped/{wildcards.sample}_mapped --quantMode GeneCounts --outSAMunmapped Within
 
-		mv unmapped/{wildcards.sample}_mapped*.bam unmapped/{wildcards.sample}_mapped.bam
+		"""	
+
+rule clean_host_mapping:
+	input:
+		"unmapped/{sample}_mappedAligned.sortedByCoord.out.bam"
+
+	output:
+		u1 = "unmapped/{sample}_1.fastq",
+		u2 = "unmapped/{sample}_2.fastq"
+	shell:
+		"""
+		mv {input} unmapped/{wildcards.sample}_mapped.bam
 
 		samtools view -b -f 4 unmapped/{wildcards.sample}_mapped.bam > unmapped/{wildcards.sample}_unmapped.bam
 
 		bedtools bamtofastq -i unmapped/{wildcards.sample}_unmapped.bam -fq {output.u1} -fq2 {output.u1}
-
-		"""	
+		"""
 
 rule assembly:
 	input:
