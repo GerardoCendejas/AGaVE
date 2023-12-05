@@ -1,3 +1,4 @@
 genome_dir : "/labs/csbig/gerardo/genomes/human/STAR"
 virus_db : "/home/gerardo/Documentos/Gera/Taller/Proyecto/Bases/virus/virus.mmi"
 human_minimap : "/labs/csbig/gerardo/genomes/human/human_genome.mmi"
+cores : "8"

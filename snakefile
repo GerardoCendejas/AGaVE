@@ -7,11 +7,13 @@ rule quality_control:
 	output:
 		c1 = "clean/{sample}_1P.fastq",
 		c2 = "clean/{sample}_2P.fastq"
+	params:
+		cores = config["cores"]
 	shell:
 		"""
 		printf "\n### Quality control for {wildcards.sample} ###\n\n"	
 
-		trimmomatic PE -threads 2 -basein {input.r1} -baseout clean/{wildcards.sample}.fastq ILLUMINACLIP:adapters.fa:2:30:10:2:keepBothReads SLIDINGWINDOW:4:28 MINLEN:75
+		trimmomatic PE -threads {params.cores} -basein {input.r1} -baseout clean/{wildcards.sample}.fastq ILLUMINACLIP:adapters.fa:2:30:10:2:keepBothReads SLIDINGWINDOW:4:28 MINLEN:75
 
 		rm clean/*U.fastq
 
@@ -25,13 +27,14 @@ rule host_mapping:
 		u1 = "unmapped/{sample}_1.fastq",
 		u2 = "unmapped/{sample}_2.fastq"
 	params:
-		genome_dir = config["genome_dir"]
+		genome_dir = config["genome_dir"],
+		cores = config["cores"]
 	shell:
 		"""
 		
 		printf  "\n###Mapping paired reads of {wildcards.sample} to host###\n\n"
 
-		STAR --runThreadN 16 --genomeDir {params.genome_dir} --sjdbGTFfile {genome_dir}/*.gtf --sjdbOverhang 150 -- readFilesIn {input} --outSAMtype BAM SortedByCoordinate --outSAMstrandField intronMotif --outFileNamePrefix unmmaped/{wildcards.sample}_mapped --quantMode GeneCounts --outSAMunmapped Within
+		STAR --runThreadN {params.cores} --genomeDir {params.genome_dir} --sjdbGTFfile {params.genome_dir}/*.gtf --sjdbOverhang 150 -- readFilesIn {input} --outSAMtype BAM SortedByCoordinate --outSAMstrandField intronMotif --outFileNamePrefix unmmaped/{wildcards.sample}_mapped --quantMode GeneCounts --outSAMunmapped Within
 
 		mv unmapped/{wildcards.sample}_mapped*.bam unmapped/{wildcards.sample}_mapped.bam
 
@@ -48,12 +51,14 @@ rule assembly:
 	output:
 		a1 = "assembly/{sample}_contigs.fasta",
 		a2 = "assembly/{sample}_contigs.gfa"
+	params:
+		cores = config["cores"]
 	shell:
 		"""
 
 		printf  "\n###De novo assembly of unmapped reads of {wildcards.sample}###\n\n" 
 
-		rnaspades.py -1 {input.u1} -2 {input.u2} -k 51 -o assembly/{wildcards.sample}/ --threads 8 --memory 60 -k 31,53,75,91,115
+		rnaspades.py -1 {input.u1} -2 {input.u2} -k 51 -o assembly/{wildcards.sample}/ --threads {params.cores} --memory 60 -k 31,53,75,91,115
 
 		mv assembly/{wildcards.sample}/transcripts.fasta {output.a1}
 
@@ -71,7 +76,8 @@ rule annotate_contigs:
 		"annot/contig/{sample}_contigs.fna"
 	params:
 		outdir = "annot/contig/",
-		prefix = "contigs"
+		prefix = "contigs",
+		cores = config["cores"]
 	conda:
 		"envs/prokka.yaml"
 	shell:
@@ -80,7 +86,7 @@ rule annotate_contigs:
 		printf  "\n###Annotating {wildcards.sample} assembled contigs with prokka###\n\n"
 
 
-		prokka --addgenes --outdir {params.outdir} --locustag {wildcards.sample} --kingdom Viruses --prefix {wildcards.sample}_{params.prefix} --metagenome --mincontiglen 1 --cpus 8 --norrna --notrna {input}
+		prokka --addgenes --outdir {params.outdir} --locustag {wildcards.sample} --kingdom Viruses --prefix {wildcards.sample}_{params.prefix} --metagenome --mincontiglen 1 --cpus {params.cores} --norrna --notrna {input}
 
 		"""
 
@@ -108,7 +114,8 @@ use rule annotate_contigs as annotate_clusters with:
 		"annot/cluster/{sample}_clusters.fna"
 	params:
 		outdir = "annot/cluster/",
-		prefix = "clusters"
+		prefix = "clusters",
+		cores = config["cores"]
 
 rule virus_mapping:
 	input:
@@ -121,12 +128,13 @@ rule virus_mapping:
 		database = config["virus_db"],
 		org = "viruses",
 		outdir = "viralmap/contig/",
-		tag = "mapped2virus"
+		tag = "mapped2virus",
+		cores = config["cores"]
 	shell:
 		"""
 		printf  "\n###Mapping {wildcards.sample} assembled contigs to {params.org} database###\n\n"
 
-		minimap2 -ax splice --cs -C5 -L -t16 {params.database} {input} > {params.outdir}{wildcards.sample}_aln.sam
+		minimap2 -ax splice --cs -C5 -L -t {params.cores} {params.database} {input} > {params.outdir}{wildcards.sample}_aln.sam
 
 		samtools view -b -F 4 {params.outdir}{wildcards.sample}_aln.sam > {params.outdir}{wildcards.sample}_{params.tag}.bam
 
@@ -153,7 +161,8 @@ use rule virus_mapping as virus_mapping_clus with:
 		database = config["virus_db"],
 		org = "viruses",
 		outdir = "viralmap/cluster/",
-		tag = "mapped2virus"
+		tag = "mapped2virus",
+		cores = config["cores"]
 
 use rule virus_mapping as host_mapping_2 with:
 	input:
@@ -165,8 +174,9 @@ use rule virus_mapping as host_mapping_2 with:
 	params:
 		database = config["human_minimap"],
 		org = "human",
-		outdir = "humanmap",
-		tag = "mapped2human"
+		outdir = "humanmap/",
+		tag = "mapped2human",
+		cores = config["cores"]
 
 
 rule results:
@@ -189,7 +199,7 @@ rule results:
 
 use rule results as results_cluster with:
 	input:
-		f1 = "annot/cluster/{sample}_contigs.gbk",
+		f1 = "annot/cluster/{sample}_clusters.gbk",
 		f2 = "viralmap/cluster/{sample}_mapped2virus_sorted.bam"
 	output:
 		r1 = "results/cluster/{sample}_aln.csv"
