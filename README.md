@@ -9,6 +9,20 @@
     <img width="50%" src="https://github.com/GerardoCMM/RNAseq-Retinoblastoma/blob/main/dag.svg"> 
 </p>
 
+## Requirements
+
+In order to install and use (Name) you need to have installed some version of conda, we recommend the miniconda distribution.
+
+You can use the next commands to install miniconda on a linux computer:
+
+```
+wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+
+bash Miniconda3-latest-Linux-x86_64.sh
+```
+
+After running the previous commands, follow the instructions for a full installation of miniconda.
+
 ## Installation
 
 Clone repository:
@@ -48,7 +62,7 @@ Checking the steps to be run:
 snakemake -np sample_log.a humanmap/sample_mapped2human.fastq
 ```
 
-Running the pipeline with a maximum of 8 cores
+Running the pipeline with a maximum of 8 cores:
 
 ```
 snakemake --cores 8 --use-conda *sample*_log.a humanmap/sample_mapped2human.fastq
