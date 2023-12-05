@@ -24,7 +24,8 @@ rule host_mapping:
 		c1 = "clean/{sample}_1P.fastq",
 		c2 = "clean/{sample}_2P.fastq"
 	output:
-		"unmapped/{sample}_mappedAligned.sortedByCoord.out.bam"
+		u1 = "unmapped/{sample}_1.fastq",
+		u2 = "unmapped/{sample}_2.fastq"
 	params:
 		genome_dir = config["genome_dir"],
 		cores = config["cores"]
@@ -33,19 +34,8 @@ rule host_mapping:
 		
 		printf  "\n###Mapping paired reads of {wildcards.sample} to host###\n\n"
 
-		STAR --runThreadN {params.cores} --genomeDir {params.genome_dir} --sjdbGTFfile {params.genome_dir}/*.gtf --sjdbOverhang 150 -- readFilesIn {input} --outSAMtype BAM SortedByCoordinate --outSAMstrandField intronMotif --outFileNamePrefix unmmapped/{wildcards.sample}_mapped --quantMode GeneCounts --outSAMunmapped Within
+		STAR --runThreadN {params.cores} --genomeDir {params.genome_dir} --sjdbGTFfile {params.genome_dir}/*.gtf --sjdbOverhang 150 -- readFilesIn {input} --outSAMtype BAM SortedByCoordinate --outSAMstrandField intronMotif --outFileNamePrefix unmapped/{wildcards.sample}_mapped --quantMode GeneCounts --outSAMunmapped Within
 
-		"""	
-
-rule clean_host_mapping:
-	input:
-		"unmapped/{sample}_mappedAligned.sortedByCoord.out.bam"
-
-	output:
-		u1 = "unmapped/{sample}_1.fastq",
-		u2 = "unmapped/{sample}_2.fastq"
-	shell:
-		"""
 		mv {input} unmapped/{wildcards.sample}_mapped.bam
 
 		samtools view -b -f 4 unmapped/{wildcards.sample}_mapped.bam > unmapped/{wildcards.sample}_unmapped.bam
