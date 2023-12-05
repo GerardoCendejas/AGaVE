@@ -29,7 +29,7 @@ wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
 bash Miniconda3-latest-Linux-x86_64.sh
 ```
 
-After running the previous commands, follow the instructions for a full installation of miniconda.
+After running the previous commands, follow the instructions for a full installation.
 
 ## Installation
 
