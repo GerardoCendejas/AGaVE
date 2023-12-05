@@ -36,7 +36,7 @@ rule host_mapping:
 
 		STAR --runThreadN {params.cores} --genomeDir {params.genome_dir} --sjdbGTFfile {params.genome_dir}/*.gtf --sjdbOverhang 150 -- readFilesIn {input} --outSAMtype BAM SortedByCoordinate --outSAMstrandField intronMotif --outFileNamePrefix unmapped/{wildcards.sample}_mapped --quantMode GeneCounts --outSAMunmapped Within
 
-		mv {input} unmapped/{wildcards.sample}_mapped.bam
+		mv unmapped/{wildcards.sample}_mapped*.bam unmapped/{wildcards.sample}_mapped.bam
 
 		samtools view -b -f 4 unmapped/{wildcards.sample}_mapped.bam > unmapped/{wildcards.sample}_unmapped.bam
 
