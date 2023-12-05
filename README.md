@@ -73,5 +73,5 @@ snakemake -np sample_log.a humanmap/sample_mapped2human.fastq
 Running the pipeline with a maximum of 8 cores:
 
 ```
-snakemake --cores 8 --use-conda *sample*_log.a humanmap/sample_mapped2human.fastq
+snakemake --cores 8 --use-conda sample_log.a humanmap/sample_mapped2human.fastq
 ```
