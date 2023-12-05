@@ -13,7 +13,7 @@ rule quality_control:
 		"""
 		printf "\n### Quality control for {wildcards.sample} ###\n\n"	
 
-		trimmomatic PE -threads {params.cores} -basein {input.r1} {input.r2} -baseout clean/{wildcards.sample}.fastq ILLUMINACLIP:adapters.fa:2:30:10:2:keepBothReads SLIDINGWINDOW:4:28 MINLEN:75
+		trimmomatic PE -threads {params.cores} -basein {input.r1} -baseout clean/{wildcards.sample}.fastq ILLUMINACLIP:adapters.fa:2:30:10:2:keepBothReads SLIDINGWINDOW:4:28 MINLEN:75
 
 		rm clean/*U.fastq
 
