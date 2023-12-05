@@ -30,6 +30,7 @@ conda env create -f rna_seq_analysis.yml
 >Your samples should be located at the samples/ directory in fastq format and the naming:
 > - *sample*_1.fastq
 > - *sample*_2.fastq
+> 
 > where *sample* can be any given name for your sample.
 
 
@@ -44,11 +45,11 @@ conda activate rna_seq_analysis
 Checking the steps to be run:
 
 ```
-snakemake -np *sample*_log.a humanmap/*sample*_mapped2human.fastq
+snakemake -np sample_log.a humanmap/sample_mapped2human.fastq
 ```
 
 Running the pipeline with a maximum of 8 cores
 
 ```
-snakemake --cores 8 --use-conda *sample*_log.a humanmap/*sample*_mapped2human.fastq
+snakemake --cores 8 --use-conda *sample*_log.a humanmap/sample_mapped2human.fastq
 ```
