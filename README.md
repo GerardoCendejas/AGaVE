@@ -11,7 +11,15 @@
 
 ## Requirements
 
-In order to install and use (Name) you need to have installed some version of conda, we recommend the miniconda distribution.
+### Hardware
+
+- 16GB of memory
+
+### Software
+
+- Linux operating system
+
+- Some version of conda, we recommend the miniconda distribution.
 
 You can use the next commands to install miniconda on a linux computer:
 
