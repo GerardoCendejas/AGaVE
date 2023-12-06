@@ -5,6 +5,5 @@ channels:
 dependencies:
  - pandas=2.0.1
  - python=3.10
- - sys
  - pysam=0.21.0
  - biopython>=1.81
