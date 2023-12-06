@@ -193,6 +193,8 @@ rule results:
 	params:
 		outdir = "results/contig",
 		tag = "contigs"
+	conda:
+		"envs/results.yaml"
 	shell:
 		"""
 
