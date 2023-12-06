@@ -87,9 +87,9 @@ rule annotate_contigs:
 
 		prokka --addgenes --outdir {params.outdir} --locustag {wildcards.sample} --kingdom Viruses --prefix {wildcards.sample}_{params.prefix} --metagenome --mincontiglen 1 --cpus {params.cores} --norrna --notrna {input}
 
-		mv {params.outdir}{sample}_{params.prefix}.gbk annot/{sample}_{params.prefix}.gbk
+		mv {params.outdir}{wildcards.sample}_{params.prefix}.gbk annot/{wildcards.sample}_{params.prefix}.gbk
 
-		mv {params.outdir}{sample}_{params.prefix}.fna annot/{sample}_{params.prefix}.fna
+		mv {params.outdir}{wildcards.sample}_{params.prefix}.fna annot/{wildcards.sample}_{params.prefix}.fna
 
 		rm -r {params.outdir}
 
