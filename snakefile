@@ -71,8 +71,8 @@ rule annotate_contigs:
 	input:
 		"assembly/{sample}_contigs.fasta"
 	output:
-		"annot/contig/{sample}_contigs.gbk",
-		"annot/contig/{sample}_contigs.fna"
+		"annot/{sample}_contigs.gbk",
+		"annot/{sample}_contigs.fna"
 	params:
 		outdir = "annot/contig/",
 		prefix = "contigs",
@@ -86,6 +86,12 @@ rule annotate_contigs:
 
 
 		prokka --addgenes --outdir {params.outdir} --locustag {wildcards.sample} --kingdom Viruses --prefix {wildcards.sample}_{params.prefix} --metagenome --mincontiglen 1 --cpus {params.cores} --norrna --notrna {input}
+
+		mv {params.outdir}{sample}_{params.prefix}.gbk annot/{sample}_{params.prefix}.gbk
+
+		mv {params.outdir}{sample}_{params.prefix}.fna annot/{sample}_{params.prefix}.fna
+
+		rm -r {params.outdir}
 
 		"""
 
@@ -109,8 +115,8 @@ use rule annotate_contigs as annotate_clusters with:
 	input:
 		"clusters/{sample}_repr.fasta"
 	output:
-		"annot/cluster/{sample}_clusters.gbk",
-		"annot/cluster/{sample}_clusters.fna"
+		"annot/{sample}_clusters.gbk",
+		"annot/{sample}_clusters.fna"
 	params:
 		outdir = "annot/cluster/",
 		prefix = "clusters",
@@ -118,7 +124,7 @@ use rule annotate_contigs as annotate_clusters with:
 
 rule virus_mapping:
 	input:
-		"annot/contig/{sample}_contigs.fna"
+		"annot/{sample}_contigs.fna"
 	output:
 		v1 = "viralmap/contig/{sample}_mapped2virus.fastq",
 		v2 = "viralmap/contig/{sample}_mapped2virus.fasta",
@@ -151,7 +157,7 @@ rule virus_mapping:
 
 use rule virus_mapping as virus_mapping_clus with:
 	input:
-		"annot/cluster/{sample}_clusters.fna"
+		"annot/{sample}_clusters.fna"
 	output:
 		v1 = "viralmap/cluster/{sample}_mapped2virus.fastq",
 		v2 = "viralmap/cluster/{sample}_mapped2virus.fasta",
@@ -165,7 +171,7 @@ use rule virus_mapping as virus_mapping_clus with:
 
 use rule virus_mapping as host_mapping_2 with:
 	input:
-		"annot/contig/{sample}_contigs.fna"
+		"annot/{sample}_contigs.fna"
 	output:
 		v1 = "humanmap/{sample}_mapped2human.fastq",
 		v2 = "humanmap/{sample}_mapped2human.fasta",
@@ -180,7 +186,7 @@ use rule virus_mapping as host_mapping_2 with:
 
 rule results:
 	input:
-		f1 = "annot/contig/{sample}_contigs.gbk",
+		f1 = "annot/{sample}_contigs.gbk",
 		f2 = "viralmap/contig/{sample}_mapped2virus_sorted.bam"
 	output:
 		r1 = "results/contig/{sample}_aln.csv"
@@ -198,7 +204,7 @@ rule results:
 
 use rule results as results_cluster with:
 	input:
-		f1 = "annot/cluster/{sample}_clusters.gbk",
+		f1 = "annot/{sample}_clusters.gbk",
 		f2 = "viralmap/cluster/{sample}_mapped2virus_sorted.bam"
 	output:
 		r1 = "results/cluster/{sample}_aln.csv"
