@@ -85,7 +85,7 @@ rule annotate_contigs:
 		printf  "\n###Annotating {wildcards.sample} assembled contigs with prokka###\n\n"
 
 
-		prokka --addgenes --outdir {params.outdir} --locustag {wildcards.sample} --kingdom Viruses --prefix {wildcards.sample}_{params.prefix} --metagenome --mincontiglen 1 --cpus {params.cores} --norrna --notrna {input}
+		prokka --addgenes --outdir {params.outdir} --locustag {wildcards.sample} --kingdom Viruses --prefix {wildcards.sample}_{params.prefix} --metagenome --mincontiglen 1 --cpus {params.cores} --centre X --compliant --norrna --notrna {input}
 
 		mv {params.outdir}{wildcards.sample}_{params.prefix}.gbk annot/{wildcards.sample}_{params.prefix}.gbk
 
