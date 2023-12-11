@@ -53,8 +53,9 @@ sourceFile = open(f'{outdir}{sys.argv[2]}_annotated.fasta', 'w')
 
 for record in records:
     for feature in record.features:
-        if feature.type == "CDS" and feature.qualifiers["product"][0]!="hypothetical protein":
-            print(f'> {feature.qualifiers["locus_tag"][0]}\n{feature.extract(record.seq)}',file=sourceFile)
+        if feature.type == "CDS" and "product" in feature.qualifiers:
+            if feature.qualifiers["product"][0]!="hypothetical protein":
+                print(f'> {feature.qualifiers["locus_tag"][0]} {feature.qualifiers["product"][0]}\n{feature.extract(record.seq)}',file=sourceFile)
 
 sourceFile.close()
 
@@ -64,8 +65,9 @@ sourceFile = open(f'{outdir}{sys.argv[2]}_annotated_aa.fasta', 'w')
 
 for record in records:
     for feature in record.features:
-        if feature.type == "CDS" and feature.qualifiers["product"][0]!="hypothetical protein":
-            print(f'> {feature.qualifiers["locus_tag"][0]}\n{feature.qualifiers["translation"][0]}',file=sourceFile)
+        if feature.type == "CDS" and "product" in feature.qualifiers:
+            if feature.qualifiers["product"][0]!="hypothetical protein":
+                print(f'> {feature.qualifiers["locus_tag"][0]} {feature.qualifiers["product"][0]}\n{feature.qualifiers["translation"][0]}',file=sourceFile)
 
 sourceFile.close()
 
@@ -79,8 +81,9 @@ print("Contig,LocusTag,ContigLen,LocusLen,ProteinLen,Product,Similar2,LXCXE",fil
 
 for record in records:
     for feature in record.features:
-        if feature.type == "CDS" and feature.qualifiers["product"][0]!="hypothetical protein":
-            print(f'{record.name},{feature.qualifiers["locus_tag"][0]},{abs(record.features[0].location.end)},{abs(feature.location.end-feature.location.start)},{len(feature.qualifiers["translation"][0])},"{feature.qualifiers["product"][0]}",{feature.qualifiers["inference"][1].split(":")[2]},{len(p.findall(feature.qualifiers["translation"][0]))!=0}',file=sourceFile)
+        if feature.type == "CDS" and "product" in feature.qualifiers:
+            if feature.qualifiers["product"][0]!="hypothetical protein":
+                print(f'{record.name},{feature.qualifiers["locus_tag"][0]},{abs(record.features[0].location.end)},{abs(feature.location.end-feature.location.start)},{len(feature.qualifiers["translation"][0])},"{feature.qualifiers["product"][0]}",{feature.qualifiers["inference"][1].split(":")[2]},{len(p.findall(feature.qualifiers["translation"][0]))!=0}',file=sourceFile)
 
 sourceFile.close()
 
@@ -211,7 +214,7 @@ file = pd.read_csv(f'{outdir}{sys.argv[2]}_aln.csv',header=None)
 def get_annot_from_contig(record):
     res = []
     for feature in record.features:
-        if feature.type=="CDS":
+        if feature.type=="CDS" and "product" in feature.qualifiers:
             try:
                 gene = feature.qualifiers["gene"][0]
             except:
@@ -227,7 +230,7 @@ for record in records:
 annot_col = []
 
 for contig in file[1]:
-    annot_col.append(annot[contig])
+    annot_col.append(annot[contig.split("|")[2]])
 
 file[6] = annot_col
 
