@@ -227,11 +227,11 @@ rule plot_results:
 
 		printf  "\n###Generating result plots for contigs###\n\n"
 
-		Rscript --vanilla scripts/Plot.R {input.p1}  results/contig/plots/
+		Rscript --vanilla scripts/Plot.R {input.p1}  results/contig/plots/{wildcards.sample}/
 
 		printf  "\n###Generating result plots for clusters###\n\n"
 
-		Rscript --vanilla scripts/Plot.R {input.p2}  results/cluster/plots/
+		Rscript --vanilla scripts/Plot.R {input.p2}  results/cluster/plots/{wildcards.sample}/
 
 
 		"""
