@@ -221,7 +221,7 @@ rule plot_results:
 	log:
 		"{sample}_log.a"
 	conda:
-		"envs/results.yaml"
+		"envs/plot_results.yaml"
 	shell:
 		"""
 
