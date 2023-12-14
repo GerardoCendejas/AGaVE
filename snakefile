@@ -78,7 +78,7 @@ rule annotate_contigs:
 		prefix = "contigs",
 		cores = config["cores"]
 	conda:
-		"envs/prokka.yaml"
+		"envs/prokka.yml"
 	shell:
 		"""
 		
@@ -194,7 +194,7 @@ rule results:
 		outdir = "results/contig",
 		tag = "contigs"
 	conda:
-		"envs/results.yaml"
+		"envs/results.yml"
 	shell:
 		"""
 
@@ -221,7 +221,7 @@ rule plot_results:
 	log:
 		"{sample}_log.a"
 	conda:
-		"envs/plot_results.yaml"
+		"envs/plot_results.yml"
 	shell:
 		"""
 
