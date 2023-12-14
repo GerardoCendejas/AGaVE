@@ -49,22 +49,65 @@ conda env create -f rna_seq_analysis.yml
 
 ## Usage
 
->Your samples should be located at the samples/ directory in fastq format and the naming:
-> - *sample*_1.fastq
-> - *sample*_2.fastq
-> 
-> where *sample* can be any given name for your sample.
+### Activating the environment
 
-
-Activating the environment:
+This is neccesary every time you want to run the pipeline.
 
 ```
 conda activate rna_seq_analysis
 ```
 
+### Databases
+
+It is recommended that the databases and their indexes are outside of the repo directory; this should be done only one time.
+
+The human genome can be downloaded from the [NCBI](https://www.ncbi.nlm.nih.gov/genome/guide/human/) and indexed with the next commands:
+
+- STAR
+```
+STAR --runMode genomeGenerate --runThreadN 8 --genomeDir /path/to/genomeDir --genomeFastaFiles /path/to/genomic/fasta.fna --sjdbGTFfile /path/to/genomic/annotations.gtf --sjdbOverhang 150
+```
+
+- Minimap2
+```
+minimap2 -d /path/to/genomic/index.mmi /path/to/genomic/fasta.fna
+```
+
+The viral database is present in the repo as _virus.fa_ and can be indexed with the following command:
+```
+minimap2 -d /path/to/viral/index.mmi virus.fa
+```
+
+#### Config file
+
+The _config.yml_ file should be modified to have the proper database directories and number of cores to be used.
+```
+genome_dir : "/path/to/genomeDir"
+virus_db : "/path/to/viral/index.mmi"
+human_minimap : "/path/to/genomic/index.mmi"
+cores : "8"
+```
+
+### Samples
+
+Your samples should be located at the samples/ directory in fastq format and the naming:
+- *sample*_1.fastq
+- *sample*_2.fastq
+ 
+where *sample* can be any given name for your sample.
+
+If your samples are in the SRA database you can use [SRA Toolkit](https://github.com/ncbi/sra-tools):
+```
+mkdir samples && cd samples
+
+fasrterq-dump --split-files -p SRRXXXXXX
+```
+
+Where SRRXXXXXX is the run ID.
+
 ### For running the full pipeline
 
-Checking the steps to be run:
+Checking the steps to be run (from the base of the repo):
 
 ```
 snakemake -np sample_log.a humanmap/sample_mapped2human.fastq
