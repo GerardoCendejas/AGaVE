@@ -68,19 +68,21 @@ The human genome can be downloaded from the [NCBI](https://www.ncbi.nlm.nih.gov/
 STAR --runMode genomeGenerate --runThreadN 8 --genomeDir /path/to/genomeDir --genomeFastaFiles /path/to/genomic/fasta.fna --sjdbGTFfile /path/to/genomic/annotations.gtf --sjdbOverhang 150
 ```
 
+Where `/path/to/genomic/fasta.fna` and `/path/to/genomic/annotations.gtf` are the locations for the downloaded files for the genome and `/path/to/genomeDir` is the directory of the index to be created; `--runThreadN` sets the number of threads to be used in the indexing process.
+
 - Minimap2
 ```
 minimap2 -d /path/to/genomic/index.mmi /path/to/genomic/fasta.fna
 ```
 
-The viral database is present in the repo as _virus.fa_ and can be indexed with the following command:
+The viral database is present in the repo as `virus.fa` and can be indexed with the following command:
 ```
 minimap2 -d /path/to/viral/index.mmi virus.fa
 ```
 
-#### Config file
+### Config file
 
-The _config.yml_ file should be modified to have the proper database directories and number of cores to be used.
+The `config.yml` file should be modified to have the proper database directories and number of cores to be used.
 ```
 genome_dir : "/path/to/genomeDir"
 virus_db : "/path/to/viral/index.mmi"
@@ -94,7 +96,7 @@ Your samples should be located at the samples/ directory in fastq format and the
 - *sample*_1.fastq
 - *sample*_2.fastq
  
-where *sample* can be any given name for your sample.
+where _sample_ can be any given name for your sample.
 
 If your samples are in the SRA database you can use [SRA Toolkit](https://github.com/ncbi/sra-tools):
 ```
@@ -103,7 +105,7 @@ mkdir samples && cd samples
 fasrterq-dump --split-files -p SRRXXXXXX
 ```
 
-Where SRRXXXXXX is the run ID.
+Where `SRRXXXXXX` is the run ID.
 
 ### For running the full pipeline
 
