@@ -191,6 +191,7 @@ rule results:
 	output:
 		r1 = "results/contig/{sample}_aln.csv"
 	params:
+		script = "annot_resume.py",
 		outdir = "results/contig",
 		tag = "contigs"
 	conda:
@@ -200,7 +201,7 @@ rule results:
 
 		printf  "\n###Generating result files for {params.tag}###\n\n"
 
-		python scripts/annot_resume.py {input.f1} {wildcards.sample} {input.f2} ./virus.csv {params.outdir}
+		python scripts/{params.script} {input.f1} {wildcards.sample} {input.f2} ./virus.csv {params.outdir}
 
 		"""
 
@@ -211,8 +212,21 @@ use rule results as results_cluster with:
 	output:
 		r1 = "results/cluster/{sample}_aln.csv"
 	params:
+		script = "annot_resume.py",
 		outdir = "results/cluster",
 		tag = "clusters"
+
+use rule results as results_int with:
+	input:
+		f1 = "annot/{sample}_contigs.gbk",
+		f2 = "humanmap/{sample}_mapped2human_sorted.bam"
+	output:
+		r1 = "results/contig/{sample}_int_aln.csv"
+	params:
+		script = "annot_int.py",
+		outdir = "results/contig",
+		tag = "integrations"
+
 
 rule plot_results:
 	input:
@@ -233,5 +247,21 @@ rule plot_results:
 
 		Rscript --vanilla scripts/Plot.R {input.p2}  results/cluster/plots/{wildcards.sample}/
 
+		"""
+
+rule plot_int:
+	input:
+		"results/contig/{sample}_int_aln.csv"
+	log:
+		"{sample}_int_log.a"
+	conda:
+		"envs/plot_results.yml"
+	shell:
+		"""
+
+		printf  "\n###Generating result plots for integration sites###\n\n"
+
+		Rscript --vanilla scripts/Plot.R {input}  results/contig/plots/{wildcards.sample}/
 
 		"""
+

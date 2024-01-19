@@ -9,6 +9,17 @@ data <- read.csv(args[1], header=FALSE)
 outdir <- args[2]
 
 plot_ref <- function(x){
+
+  xmin <- min(x[,V5])- 500
+
+  max_sum <- 0
+
+  for i in 1:length([,V1]){
+    max_sum <- max(max_sum,sum(as.numeric(strsplit(x[i,V6],split=",")[[1]])))
+  }
+
+  xmax <- max(x[,V5])+max_sum+500
+
   g <- ggplot(data=x)+geom_rect(data=x, mapping=aes(xmin=0, xmax=V4, ymin=-0.15, ymax=0.15),
                            color="black",fill="red")+
     theme_minimal()+ggtitle(x$V1)+scale_x_continuous(position = "top")+
@@ -109,7 +120,7 @@ plot_contig <- function(g,x,ypos){
 }
 
 plot_aln <- function(df){
-  g <- plot_ref(df[1,])
+  g <- plot_ref(df)
   
   for(i in 1:dim(df)[1]){
     g <- plot_contig(g,df[i,],i*(-0.4))
@@ -131,7 +142,7 @@ plot_annot <- function(g,x,ypos){
 }
 
 plot_aln_annot <- function(df){
-  g <- plot_ref(df[1,])
+  g <- plot_ref(df)
   
   for(i in 1:dim(df)[1]){
     g <- plot_contig(g,df[i,],i*(-0.6))
