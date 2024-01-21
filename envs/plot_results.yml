@@ -6,3 +6,4 @@ dependencies:
  - r-essentials
  - r-base
  - r-ggplot2
+ - r-RIdeogram

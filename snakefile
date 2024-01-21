@@ -266,7 +266,7 @@ rule plot_int:
 
 		printf  "\n###Generating result plots for integration sites###\n\n"
 
-		Rscript --vanilla scripts/Plot.R {input}  results/contig/plots/{wildcards.sample}/
+		Rscript --vanilla scripts/Plot_int.R {input}  results/contig/plots/{wildcards.sample}/
 
 		"""
 
