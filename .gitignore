@@ -6,4 +6,6 @@ assembly/
 viralmap/
 humanmap/
 results/
+clusters/
 .snakemake/
+*log.a

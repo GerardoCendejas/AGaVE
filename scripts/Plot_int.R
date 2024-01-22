@@ -11,7 +11,7 @@ outdir <- args[2]
 
 data(human_karyotype, package="RIdeogram")
 
-data(gene_density, package="RIdeogram")
+gene_density <- read.csv("scripts/bands.txt")
 
 for_plot <- int[int[,2]!="triangle",]
 

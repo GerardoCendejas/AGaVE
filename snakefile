@@ -256,7 +256,7 @@ rule plot_results:
 
 rule plot_int:
 	input:
-		"results/contig/{sample}_int_aln.csv"
+		"results/contig/{sample}_int_id.csv"
 	log:
 		"{sample}_int_log.a"
 	conda:
