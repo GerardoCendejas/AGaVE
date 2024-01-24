@@ -110,6 +110,18 @@ sourceFile.close()
 
 file = pd.read_csv(f'{outdir}{sys.argv[2]}_int_aln.csv',header=None)
 
+contig_len = {}
+
+for record in records:
+    contig_len[record.name]=len(record.seq)
+
+contig_len_fin = []
+
+for contig in file[1]:
+    contig_len_fin.append(contig_len[contig.split("|")[2]])
+
+file[6] = contig_len_fin
+
 def get_annot_from_contig(record):
     res = []
     for feature in record.features:
@@ -131,7 +143,7 @@ annot_col = []
 for contig in file[1]:
     annot_col.append(annot[contig.split("|")[2]])
 
-file[6] = annot_col
+file[7] = annot_col
 
 file_2 = pd.read_csv(f'{outdir}{sys.argv[2]}_aln.csv',header=None)
 
@@ -143,7 +155,7 @@ for contig in file[1]:
     else:
         viral.append(0)
 
-file[7] = viral
+file[8] = viral
 
 file.to_csv(f'{outdir}{sys.argv[2]}_int_aln.csv',index=False,header=None)
 
@@ -165,17 +177,17 @@ def id_chr(id):
 
 sourceFile = open(f'{outdir}{sys.argv[2]}_int_id.csv', 'w')
 
-print("Type,Shape,Chr,Start,End,color",file=sourceFile)
+print("Type,Shape,Chr,Start,End,color,len",file=sourceFile)
 
 for i in range(0,len(file[0]),1):
     if  (id_chr(file.iat[i,0]) is not None) & (file.iat[i,2]=="primary"):
-        if (file.iat[i,7]==1) and (file.iat[i,6]!=""):
-            print('viral_annot,triangle,"%s",%s,%s,0000ff'%(id_chr(file.iat[i,0]),file.iat[i,4],file.iat[i,4]+100),file=sourceFile)
-        elif (file.iat[i,7]==1) and (file.iat[i,6]==""):
-            print('viral_int,triangle,"%s",%s,%s,ffa500'%(id_chr(file.iat[i,0]),file.iat[i,4],file.iat[i,4]+100),file=sourceFile)
-        elif file.iat[i,6]!="":
-            print('annot_insertion,circle,"%s",%s,%s,000000'%(id_chr(file.iat[i,0]),file.iat[i,4],file.iat[i,4]+100),file=sourceFile)
+        if (file.iat[i,8]==1) and (file.iat[i,7]!=""):
+            print('annot_viral,triangle,"%s",%s,%s,0000ff,%s'%(id_chr(file.iat[i,0]),file.iat[i,4],file.iat[i,4]+100,file.iat[i,6]),file=sourceFile)
+        elif (file.iat[i,8]==1) and (file.iat[i,7]==""):
+            print('non_annot_viral,triangle,"%s",%s,%s,ffa500,%s'%(id_chr(file.iat[i,0]),file.iat[i,4],file.iat[i,4]+100,file.iat[i,6]),file=sourceFile)
+        elif (file.iat[i,8]==0) and file.iat[i,7]!="":
+            print('annot_contig,circle,"%s",%s,%s,000000,%s'%(id_chr(file.iat[i,0]),file.iat[i,4],file.iat[i,4]+100,file.iat[i,6]),file=sourceFile)
         else:
-            print('insertion,circle,"%s",%s,%s,ffc0cb'%(id_chr(file.iat[i,0]),file.iat[i,4],file.iat[i,4]+100),file=sourceFile)
+            print('non_annot_contig,circle,"%s",%s,%s,ffc0cb,%s'%(id_chr(file.iat[i,0]),file.iat[i,4],file.iat[i,4]+100,file.iat[i,6]),file=sourceFile)
 
 sourceFile.close()
