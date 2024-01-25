@@ -258,7 +258,7 @@ rule plot_int:
 	input:
 		"results/contig/{sample}_int_id.csv"
 	log:
-		"{sample}_int_log.a"
+		"{sample}_log_int.a"
 	conda:
 		"envs/plot_results.yml"
 	shell:
