@@ -226,7 +226,8 @@ use rule results as results_int with:
 		f1 = "annot/{sample}_contigs.gbk",
 		f2 = "humanmap/{sample}_mapped2human_sorted.bam"
 	output:
-		r1 = "results/contig/{sample}_int_aln.csv"
+		r1 = "results/contig/{sample}_int_aln.csv",
+		r2 = "results/contig/{sample}_int_id.csv"
 	params:
 		script = "annot_int.py",
 		outdir = "results/contig",
@@ -258,7 +259,7 @@ rule plot_int:
 	input:
 		"results/contig/{sample}_int_id.csv"
 	log:
-		"{sample}_log_int.a"
+		"{sample}_int_log.a"
 	conda:
 		"envs/plot_results.yml"
 	shell:
