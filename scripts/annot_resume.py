@@ -14,13 +14,11 @@ import pandas as pd
 
 aln_file=sys.argv[3]
 
-viruses_file=sys.argv[4]
-
 records = list(SeqIO.parse(sys.argv[1], "genbank"))
 
 # outdir
 
-outdir = sys.argv[5]
+outdir = sys.argv[4]
 
 if outdir[-1]!="/":
     outdir = outdir+"/"
@@ -157,11 +155,6 @@ samfile = pysam.AlignmentFile(aln_file)
 
 ### Creando archivo que dice el número de  contigs alineados a cada reference genome
 
-viruses = pd.read_csv(viruses_file)
-
-viruses = viruses.set_index(viruses["ID"]) 
-
-virus_name = []
 genomes = []
 count=[]
 genome_len=[]
@@ -170,10 +163,6 @@ coverages_per = []
 
 for genome in samfile.get_index_statistics():
     if genome[1]>0:
-        if genome[0].split(".")[0] in viruses.index:
-            virus_name.append(viruses.loc[genome[0].split(".")[0]]["Name"])
-        else:
-            virus_name.append(genome[0].split("|")[0])
         genomes.append(genome[0])
         count.append(genome[1])
         genome_len.append(samfile.get_reference_length(genome[0]))
@@ -184,10 +173,10 @@ for genome in samfile.get_index_statistics():
         coverages_len.append(coverage)
         coverages_per.append(coverage/samfile.get_reference_length(genome[0]))
         
-data = {"Virus":virus_name,"Genome":genomes,"MappedContigs":count,
+data = {"Genome":genomes,"MappedContigs":count,
         "GenomeLength":genome_len,"GenomeMappedLen":coverages_len,"GenomeCoverageIdx":coverages_per}
 data = pd.DataFrame(data,index=None)
-data=data.sort_values(by=['GenomeCoverageIdx'],ascending=False)
+data = data.sort_values(by=['GenomeCoverageIdx'],ascending=False)
 
 data.to_csv(f"{outdir}{sys.argv[2]}_ref_genome_maps.csv",index=False)
 
@@ -196,14 +185,10 @@ data.to_csv(f"{outdir}{sys.argv[2]}_ref_genome_maps.csv",index=False)
 sourceFile = open(f'{outdir}{sys.argv[2]}_aln.csv', 'w')
 
 for i in range(0,len(samfile.get_index_statistics()),1):
-    if samfile.get_reference_name(i).split(".")[0] in viruses.index:
-            name = viruses.loc[samfile.get_reference_name(i).split(".")[0]]["Name"]
-    else:
-            name = samfile.get_reference_name(i).split("|")[0]
     ref = samfile.get_reference_name(i)
     iter = samfile.fetch(ref,0,samfile.get_reference_length(ref))
     for x in iter:
-        print('%s,%s,%s,%s,%s,"%s"'%(name,str(x).split('\t')[0],aln[int(str(x).split('\t')[1])],samfile.get_reference_length(ref),str(x).split('\t')[3],get_cigar(str(x).split('\t')[5])),file=sourceFile)
+        print('%s,%s,%s,%s,%s,"%s"'%(ref,str(x).split('\t')[0],aln[int(str(x).split('\t')[1])],samfile.get_reference_length(ref),str(x).split('\t')[3],get_cigar(str(x).split('\t')[5])),file=sourceFile)
 
 sourceFile.close()
 

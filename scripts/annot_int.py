@@ -14,13 +14,11 @@ import pandas as pd
 
 aln_file=sys.argv[3]
 
-viruses_file=sys.argv[4]
-
 records = list(SeqIO.parse(sys.argv[1], "genbank"))
 
 # outdir
 
-outdir = sys.argv[5]
+outdir = sys.argv[4]
 
 if outdir[-1]!="/":
     outdir = outdir+"/"
@@ -98,11 +96,10 @@ samfile = pysam.AlignmentFile(aln_file)
 sourceFile = open(f'{outdir}{sys.argv[2]}_int_aln.csv', 'w')
 
 for i in range(0,len(samfile.get_index_statistics()),1):
-    name = samfile.get_reference_name(i).split("|")[0]
     ref = samfile.get_reference_name(i)
     iter = samfile.fetch(ref,0,samfile.get_reference_length(ref))
     for x in iter:
-        print('%s,%s,%s,%s,%s,"%s"'%(name,str(x).split('\t')[0],aln[int(str(x).split('\t')[1])],samfile.get_reference_length(ref),str(x).split('\t')[3],get_cigar(str(x).split('\t')[5])),file=sourceFile)
+        print('%s,%s,%s,%s,%s,"%s"'%(ref,str(x).split('\t')[0],aln[int(str(x).split('\t')[1])],samfile.get_reference_length(ref),str(x).split('\t')[3],get_cigar(str(x).split('\t')[5])),file=sourceFile)
 
 sourceFile.close()
 
