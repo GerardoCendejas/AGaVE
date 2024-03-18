@@ -131,3 +131,41 @@ Running the pipeline with a maximum of 8 cores:
 ```
 snakemake --cores 8 --use-conda --conda-frontend conda sample_log.a sample_int_log.a
 ```
+
+## Results
+
+A new directory named results will be created after running the pipeline. It will contain two subfolders named contig and cluster, which contain the results for the assembles contigs and the clustered contigs respectively and have similar file organization. The files found in these directories are:
+
+| File | Format | Description  |
+| ---- | --------- | ------------ |
+| sample_all.fasta | fasta | Contains all the coding sequences found in all assembled contigs or clustered sequences |
+| sample_all_aa.fasta | protein fasta | Contains the translation of all the coding sequences found in all assembled contigs or clustered sequences |
+| sample_annotated.fasta | fasta | Contains all the coding sequences found in all assembled contigs or clustered sequences and that where annotated to some known gene or protein product |
+| sample_annotated_aa.fasta | protein fasta | Contains the translation of all the coding sequences found in all assembled contigs or clustered sequences and that where annotated to some known gene or protein product |
+| sample_annotated.csv | csv | Contains the gene identity for the annotated CDSs and shows if the LxCxE motif is present |
+| sample_ref_genome_maps.csv | csv | Shows if any sequence was mapped to the viral reference database, to which reference sequence and gives a coverage index |
+| sample_aln.csv | csv | Gives information about which contigs or cluster sequences mapped to the reference virus database and in which genomes and positions |
+| sample_int_aln.csv | csv | Gives information about which contigs or cluster sequences mapped to the host genome and if they code for any protein |
+| sample_int_id.csv | csv | File neccesary for the plotting function of the contigs or cluster sequences mapped to the host genome |
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
