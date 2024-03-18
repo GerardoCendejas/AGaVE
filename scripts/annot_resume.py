@@ -2,6 +2,8 @@ import sys
 
 from Bio import SeqIO
 
+from os.path import exists
+
 import pandas as pd
 
 import pysam
@@ -151,72 +153,95 @@ def get_mapped_len(x):
 
 # Importando archivo en formato SAM
 
-samfile = pysam.AlignmentFile(aln_file)
+if exists(aln_file):
 
-### Creando archivo que dice el número de  contigs alineados a cada reference genome
+    samfile = pysam.AlignmentFile(aln_file)
 
-genomes = []
-count=[]
-genome_len=[]
-coverages_len = []
-coverages_per = []
+    ### Creando archivo que dice el número de  contigs alineados a cada reference genome
 
-for genome in samfile.get_index_statistics():
-    if genome[1]>0:
-        genomes.append(genome[0])
-        count.append(genome[1])
-        genome_len.append(samfile.get_reference_length(genome[0]))
-        coverage = 0
-        iter = samfile.fetch(genome[0],0,samfile.get_reference_length(genome[0]))
+    genomes = []
+    count=[]
+    genome_len=[]
+    coverages_len = []
+    coverages_per = []
+
+    for genome in samfile.get_index_statistics():
+        if genome[1]>0:
+            genomes.append(genome[0])
+            count.append(genome[1])
+            genome_len.append(samfile.get_reference_length(genome[0]))
+            coverage = 0
+            iter = samfile.fetch(genome[0],0,samfile.get_reference_length(genome[0]))
+            for x in iter:
+                coverage+=get_mapped_len(str(x).split('\t')[5])
+            coverages_len.append(coverage)
+            coverages_per.append(coverage/samfile.get_reference_length(genome[0]))
+            
+    data = {"Genome":genomes,"MappedContigs":count,
+            "GenomeLength":genome_len,"GenomeMappedLen":coverages_len,"GenomeCoverageIdx":coverages_per}
+    data = pd.DataFrame(data,index=None)
+    data = data.sort_values(by=['GenomeCoverageIdx'],ascending=False)
+
+    data.to_csv(f"{outdir}{sys.argv[2]}_ref_genome_maps.csv",index=False)
+
+    ### Creando archivo de información de alineamiento.
+
+    sourceFile = open(f'{outdir}{sys.argv[2]}_aln.csv', 'w')
+
+    for i in range(0,len(samfile.get_index_statistics()),1):
+        ref = samfile.get_reference_name(i)
+        iter = samfile.fetch(ref,0,samfile.get_reference_length(ref))
         for x in iter:
-            coverage+=get_mapped_len(str(x).split('\t')[5])
-        coverages_len.append(coverage)
-        coverages_per.append(coverage/samfile.get_reference_length(genome[0]))
-        
-data = {"Genome":genomes,"MappedContigs":count,
-        "GenomeLength":genome_len,"GenomeMappedLen":coverages_len,"GenomeCoverageIdx":coverages_per}
-data = pd.DataFrame(data,index=None)
-data = data.sort_values(by=['GenomeCoverageIdx'],ascending=False)
+            print('%s,%s,%s,%s,%s,"%s"'%(ref,str(x).split('\t')[0],aln[int(str(x).split('\t')[1])],samfile.get_reference_length(ref),str(x).split('\t')[3],get_cigar(str(x).split('\t')[5])),file=sourceFile)
 
-data.to_csv(f"{outdir}{sys.argv[2]}_ref_genome_maps.csv",index=False)
+    sourceFile.close()
 
-### Creando archivo de información de alineamiento.
+    # Adding information about annotations
 
-sourceFile = open(f'{outdir}{sys.argv[2]}_aln.csv', 'w')
+    file = pd.read_csv(f'{outdir}{sys.argv[2]}_aln.csv',header=None)
 
-for i in range(0,len(samfile.get_index_statistics()),1):
-    ref = samfile.get_reference_name(i)
-    iter = samfile.fetch(ref,0,samfile.get_reference_length(ref))
-    for x in iter:
-        print('%s,%s,%s,%s,%s,"%s"'%(ref,str(x).split('\t')[0],aln[int(str(x).split('\t')[1])],samfile.get_reference_length(ref),str(x).split('\t')[3],get_cigar(str(x).split('\t')[5])),file=sourceFile)
+    def get_annot_from_contig(record):
+        res = []
+        for feature in record.features:
+            if feature.type=="CDS" and "product" in feature.qualifiers:
+                try:
+                    gene = feature.qualifiers["gene"][0]
+                except:
+                    gene = feature.qualifiers["product"][0].split(",")[0]
+                res.extend([gene,str(feature.location.start+1),str(feature.location.end)])
+        return(",".join(res))
 
-sourceFile.close()
+    annot = {}
 
-# Adding information about annotations
+    for record in records:
+        annot[record.name]=get_annot_from_contig(record)
 
-file = pd.read_csv(f'{outdir}{sys.argv[2]}_aln.csv',header=None)
+    annot_col = []
 
-def get_annot_from_contig(record):
-    res = []
-    for feature in record.features:
-        if feature.type=="CDS" and "product" in feature.qualifiers:
-            try:
-                gene = feature.qualifiers["gene"][0]
-            except:
-                gene = feature.qualifiers["product"][0].split(",")[0]
-            res.extend([gene,str(feature.location.start+1),str(feature.location.end)])
-    return(",".join(res))
+    for contig in file[1]:
+        annot_col.append(annot[contig.split("|")[2]])
 
-annot = {}
+    file[6] = annot_col
 
-for record in records:
-    annot[record.name]=get_annot_from_contig(record)
+    file.to_csv(f'{outdir}{sys.argv[2]}_aln.csv',index=False,header=None)
 
-annot_col = []
+else:
 
-for contig in file[1]:
-    annot_col.append(annot[contig.split("|")[2]])
+    # Generating empty files with all zeros
 
-file[6] = annot_col
+    genomes = [0]
+    count=[0]
+    genome_len=[0]
+    coverages_len = [0]
+    coverages_per = [0]
 
-file.to_csv(f'{outdir}{sys.argv[2]}_aln.csv',index=False,header=None)
+    data = {"Genome":genomes,"MappedContigs":count,
+            "GenomeLength":genome_len,"GenomeMappedLen":coverages_len,"GenomeCoverageIdx":coverages_per}
+
+    data.to_csv(f"{outdir}{sys.argv[2]}_ref_genome_maps.csv",index=False)
+
+    sourceFile = open(f'{outdir}{sys.argv[2]}_aln.csv', 'w')
+
+    print("0,0,0,0,0,0,0",file=sourceFile)
+
+    sourceFile.close()

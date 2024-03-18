@@ -142,20 +142,27 @@ plot_aln_annot <- function(df){
   
 }
 
-
 lev <- levels(as.factor(data$V1))
 
-for(i in 1:length(lev)){
-  
-  temp <- data[which(data[,1]==lev[i]),]
-  
-  g_temp <- plot_aln(temp)
+if(!"0"%in%lev){
 
-  g_temp_annot <- plot_aln_annot(temp)
-  
-  ggsave(paste(outdir,lev[i],"_mapped.jpg",sep=""),g_temp,width = 1200,height = 800,units = "px",dpi=200)
+  for(i in 1:length(lev)){
+    
+    temp <- data[which(data[,1]==lev[i]),]
+    
+    g_temp <- plot_aln(temp)
 
-  ggsave(paste(outdir,lev[i],"_mapped_annot.jpg",sep=""),g_temp_annot,width = 1200,height = 800,units = "px",dpi=200)
-  
+    g_temp_annot <- plot_aln_annot(temp)
+    
+    ggsave(paste(outdir,lev[i],"_mapped.jpg",sep=""),g_temp,width = 1200,height = 800,units = "px",dpi=200)
+
+    ggsave(paste(outdir,lev[i],"_mapped_annot.jpg",sep=""),g_temp_annot,width = 1200,height = 800,units = "px",dpi=200)
+    
+  }
+}else{
+  g <- ggplot(data, aes(x=0,y=0))+theme_void()+
+  geom_text(aes(x=0,y=0,label="No viral sequence found"),size=10)
+
+  ggsave(paste(outdir,"NO_VIRUS.jpg",sep=""),g,width = 1200,height = 800,units = "px",dpi=200)
 }
 
