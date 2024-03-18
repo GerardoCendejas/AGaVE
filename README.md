@@ -75,10 +75,21 @@ Where `/path/to/genomic/fasta.fna` and `/path/to/genomic/annotations.gtf` are th
 minimap2 -d /path/to/genomic/index.mmi /path/to/genomic/fasta.fna
 ```
 
-The viral database is present in the repo as `virus.fa` and can be indexed with the following command:
+The viral database used in this case is the 28 version (Nov, 2023) of the RVDB clustered database release, this is a Reference Viral Database developed for enhancing virus detection using high-throughput/next-generation sequencing (HTS/NGS) technologies, and it can be found in this [link](https://rvdb.dbi.udel.edu/download/C-RVDBv28.0.fasta.gz).
+
+Once you download the fasta.gz file you can unzip the file with the next command:
+
 ```
-minimap2 -d /path/to/viral/index.mmi virus.fa
+gzip -d file.fasta.gz
 ```
+
+You can index the database with minimap2 with this command:
+
+```
+minimap2 -d /path/to/viral/index.mmi file.fasta
+```
+
+Where `file.fasta` is the fasta file containing the reference sequences and `/path/to/viral/index.mm` is the final location of the indexed database. Please note how the reference database can be easily modified and replaced just by indexing a different fasta file that may be more relevant for you. 
 
 ### Config file
 
@@ -112,11 +123,11 @@ Where `SRRXXXXXX` is the run ID.
 Checking the steps to be run (from the base of the repo):
 
 ```
-snakemake -np sample_log.a humanmap/sample_mapped2human.fastq
+snakemake -np sample_log.a sample_int_log.a
 ```
 
 Running the pipeline with a maximum of 8 cores:
 
 ```
-snakemake --cores 8 --use-conda sample_log.a humanmap/sample_mapped2human.fastq
+snakemake --cores 8 --use-conda --conda-frontend conda sample_log.a sample_int_log.a
 ```
