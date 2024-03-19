@@ -57,12 +57,13 @@ rule assembly:
 		a2 = "assembly/{sample}_contigs.gfa"
 	params:
 		cores = config["cores"]
+		kmers = config["kmers"]
 	shell:
 		"""
 
 		printf  "\n###De novo assembly of unmapped reads of {wildcards.sample}###\n\n" 
 
-		rnaspades.py -1 {input.u1} -2 {input.u2} -k 51 -o assembly/{wildcards.sample}/ --threads {params.cores} --memory 60 -k 31,53,75,91,115
+		rnaspades.py -1 {input.u1} -2 {input.u2} -k 51 -o assembly/{wildcards.sample}/ --threads {params.cores} --memory 60 -k {params.kmers} 
 
 		mv assembly/{wildcards.sample}/transcripts.fasta {output.a1}
 
