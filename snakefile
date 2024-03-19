@@ -56,7 +56,7 @@ rule assembly:
 		a1 = "assembly/{sample}_contigs.fasta",
 		a2 = "assembly/{sample}_contigs.gfa"
 	params:
-		cores = config["cores"]
+		cores = config["cores"],
 		kmers = config["kmers"]
 	shell:
 		"""
