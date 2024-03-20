@@ -2,7 +2,7 @@ import sys
 
 from Bio import SeqIO
 
-from os.path import exists
+import os
 
 import pandas as pd
 
@@ -153,7 +153,7 @@ def get_mapped_len(x):
 
 # Importando archivo en formato SAM
 
-if exists(aln_file):
+if (os.stat(aln_file).st_size != 0):
 
     samfile = pysam.AlignmentFile(aln_file)
 
