@@ -199,7 +199,7 @@ rule results:
 	params:
 		script = "annot_resume.py",
 		outdir = "results/contig",
-		tag = "contigs"
+		tag = "contig"
 	conda:
 		"envs/results.yml"
 	shell:
@@ -220,7 +220,7 @@ use rule results as results_cluster with:
 	params:
 		script = "annot_resume.py",
 		outdir = "results/cluster",
-		tag = "clusters"
+		tag = "cluster"
 
 use rule results as results_int with:
 	input:
@@ -233,7 +233,7 @@ use rule results as results_int with:
 	params:
 		script = "annot_int.py",
 		outdir = "results/contig",
-		tag = "integrations"
+		tag = "integration"
 
 
 rule plot_results:
