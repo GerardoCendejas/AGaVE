@@ -153,7 +153,29 @@ def get_mapped_len(x):
 
 # Importando archivo en formato SAM
 
-if (os.stat(aln_file).st_size != 0):
+if (os.stat(aln_file).st_size == 0):
+
+    # Generating empty files with all zeros
+
+    genomes = [0]
+    count=[0]
+    genome_len=[0]
+    coverages_len = [0]
+    coverages_per = [0]
+
+    data = {"Genome":genomes,"MappedContigs":count,
+            "GenomeLength":genome_len,"GenomeMappedLen":coverages_len,"GenomeCoverageIdx":coverages_per}
+
+    data.to_csv(f"{outdir}{sys.argv[2]}_ref_genome_maps.csv",index=False)
+
+    sourceFile = open(f'{outdir}{sys.argv[2]}_aln.csv', 'w')
+
+    print("0,0,0,0,0,0,0",file=sourceFile)
+
+    sourceFile.close()
+
+else:
+
 
     samfile = pysam.AlignmentFile(aln_file)
 
@@ -224,24 +246,3 @@ if (os.stat(aln_file).st_size != 0):
     file[6] = annot_col
 
     file.to_csv(f'{outdir}{sys.argv[2]}_aln.csv',index=False,header=None)
-
-else:
-
-    # Generating empty files with all zeros
-
-    genomes = [0]
-    count=[0]
-    genome_len=[0]
-    coverages_len = [0]
-    coverages_per = [0]
-
-    data = {"Genome":genomes,"MappedContigs":count,
-            "GenomeLength":genome_len,"GenomeMappedLen":coverages_len,"GenomeCoverageIdx":coverages_per}
-
-    data.to_csv(f"{outdir}{sys.argv[2]}_ref_genome_maps.csv",index=False)
-
-    sourceFile = open(f'{outdir}{sys.argv[2]}_aln.csv', 'w')
-
-    print("0,0,0,0,0,0,0",file=sourceFile)
-
-    sourceFile.close()
