@@ -207,7 +207,7 @@ rule results:
 
 		printf  "\n###Generating result files for {params.tag}###\n\n"
 
-		python scripts/{params.script} {input.f1} {wildcards.sample} {input.f2} {params.outdir}
+		python scripts/{params.script} {input.f1} {wildcards.sample} {input.f2} {params.outdir} {params.tag}
 
 		"""
 
