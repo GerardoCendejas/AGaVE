@@ -45,7 +45,13 @@ ggsave(paste(outdir,"contig_log_length.jpg",sep=""),g_log,width = 1200,height = 
 
 for_plot <- int[int[,2]!="triangle",]
 
-rows <- sample(nrow(for_plot), 300)
+if(nrow(for_plot)>300){
+  rows <- sample(nrow(for_plot), 300)
+  }else{
+    rows <- seq(nrow(for_plot))
+  }
+
+
 
 for_plot <- rbind(for_plot[rows,],int[int[,2]=="triangle",])
 
