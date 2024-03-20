@@ -153,7 +153,7 @@ def get_mapped_len(x):
 
 # Importando archivo en formato SAM
 
-if (os.stat(aln_file).st_size == 0):
+if (os.path.getsize(f"viralmap/{sys.argv[5]}/{sys.argv[2]}_mapped2virus.fasta") == 0):
 
     # Generating empty files with all zeros
 
