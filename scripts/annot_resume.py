@@ -166,6 +166,8 @@ if (os.path.getsize(f"viralmap/{sys.argv[5]}/{sys.argv[2]}_mapped2virus.fasta") 
     data = {"Genome":genomes,"MappedContigs":count,
             "GenomeLength":genome_len,"GenomeMappedLen":coverages_len,"GenomeCoverageIdx":coverages_per}
 
+    data = pd.DataFrame(data,index=None)
+
     data.to_csv(f"{outdir}{sys.argv[2]}_ref_genome_maps.csv",index=False)
 
     sourceFile = open(f'{outdir}{sys.argv[2]}_aln.csv', 'w')
