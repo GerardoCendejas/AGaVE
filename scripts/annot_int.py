@@ -179,12 +179,12 @@ print("Type,Shape,Chr,Start,End,color,len",file=sourceFile)
 for i in range(0,len(file[0]),1):
     if  (id_chr(file.iat[i,0]) is not None) & (file.iat[i,2]=="primary"):
         if (file.iat[i,9]==1) and (file.iat[i,8]!=""):
-            print('annot_viral,triangle,"%s",%s,%s,0000ff,%s'%(id_chr(file.iat[i,0]),file.iat[i,4],file.iat[i,4]+100,file.iat[i,6]),file=sourceFile)
+            print('annot_viral,triangle,"%s",%s,%s,0000ff,%s'%(id_chr(file.iat[i,0]),file.iat[i,4],file.iat[i,4]+100,file.iat[i,7]),file=sourceFile)
         elif (file.iat[i,9]==1) and (file.iat[i,8]==""):
-            print('non_annot_viral,triangle,"%s",%s,%s,ffa500,%s'%(id_chr(file.iat[i,0]),file.iat[i,4],file.iat[i,4]+100,file.iat[i,6]),file=sourceFile)
+            print('non_annot_viral,triangle,"%s",%s,%s,ffa500,%s'%(id_chr(file.iat[i,0]),file.iat[i,4],file.iat[i,4]+100,file.iat[i,7]),file=sourceFile)
         elif (file.iat[i,9]==0) and file.iat[i,8]!="":
-            print('annot_contig,circle,"%s",%s,%s,000000,%s'%(id_chr(file.iat[i,0]),file.iat[i,4],file.iat[i,4]+100,file.iat[i,6]),file=sourceFile)
+            print('annot_contig,circle,"%s",%s,%s,000000,%s'%(id_chr(file.iat[i,0]),file.iat[i,4],file.iat[i,4]+100,file.iat[i,7]),file=sourceFile)
         else:
-            print('non_annot_contig,circle,"%s",%s,%s,ffc0cb,%s'%(id_chr(file.iat[i,0]),file.iat[i,4],file.iat[i,4]+100,file.iat[i,6]),file=sourceFile)
+            print('non_annot_contig,circle,"%s",%s,%s,ffc0cb,%s'%(id_chr(file.iat[i,0]),file.iat[i,4],file.iat[i,4]+100,file.iat[i,7]),file=sourceFile)
 
 sourceFile.close()
