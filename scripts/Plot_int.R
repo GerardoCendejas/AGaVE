@@ -64,6 +64,8 @@ file.rename(from="chromosome.png",to=paste(outdir,"all.png"))
 
 file.rename(from="chromosome.svg",to=paste(outdir,"all.svg"))
 
+if("triangle"%in%levels(int[,2])){
+
 ideogram(karyotype = human_karyotype, overlaid = gene_density, label = int[int[,2]=="triangle",],
          label_type = "marker",colorset1 = c("#ffffff", "#000000"))
 
@@ -73,6 +75,9 @@ file.rename(from="chromosome.png",to=paste(outdir,"viral.png"))
 
 file.rename(from="chromosome.svg",to=paste(outdir,"viral.svg"))
 
+}
+
+  
 # Ideograms for size category
 
 for(i in 1:length(for_plot$len)){
