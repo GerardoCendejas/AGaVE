@@ -10,8 +10,6 @@ import pysam
 
 import re
 
-import pandas as pd
-
 # Load gbk file
 
 aln_file=sys.argv[3]
