@@ -1,4 +1,4 @@
-name: rna_seq_analysis
+name: agave
 channels:
   - bioconda
   - conda-forge

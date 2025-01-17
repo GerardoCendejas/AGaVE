@@ -5,7 +5,7 @@
 AGaVE (Analysis of Genomic and Viral Elements) is a pipeline designed for the search of viral sequences in RNAseq samples from human tissues or human related samples. This pipeline was designed using previously developed tools that are available via conda and organized using the snakemake workflow management system. A basic diagram of the pipeline is shown in the next image.
 
 <p align="center" width="100%">
-    <img width="50%" src="https://github.com/GerardoCMM/RNAseq-Retinoblastoma/blob/main/dag.svg"> 
+    <img width="50%" src="https://github.com/GerardoCendejas/AGaVE/blob/main/dag.svg"> 
 </p>
 
 ## Requirements
@@ -88,11 +88,11 @@ You can index the database with minimap2 with this command:
 minimap2 -d /path/to/viral/index.mmi file.fasta
 ```
 
-Where `file.fasta` is the fasta file containing the reference sequences and `/path/to/viral/index.mm` is the final location of the indexed database. Please note how the reference database can be easily modified and replaced just by indexing a different fasta file that may be more relevant to you. 
+Where `file.fasta` is the fasta file containing the reference sequences and `/path/to/viral/index.mmi` is the final location of the indexed database. Please note how the reference database can be easily modified and replaced just by indexing a different fasta file that may be more relevant to you. 
 
 ### Config file
 
-The `config.yml` file should be modified to have the proper database directories and number of cores to be used.
+The `config.yml` file should be modified to have the proper database directories and number of cores to be used, as well as the kmer sizes to be used in the de novo assembly.
 ```
 genome_dir : "/path/to/genomeDir"
 virus_db : "/path/to/viral/index.mmi"
@@ -123,13 +123,13 @@ Where `SRRXXXXXX` is the run ID.
 Checking the steps to be run (from the base of the repo):
 
 ```
-snakemake -np sample_log.a sample_int_log.a
+snakemake -np sample_log.a sample_int_log.b
 ```
 
 Running the pipeline with a maximum of 8 cores:
 
 ```
-snakemake --cores 8 --use-conda --conda-frontend conda sample_log.a sample_int_log.a
+snakemake --cores 8 --use-conda --conda-frontend conda sample_log.a sample_int_log.b
 ```
 
 ## Results

@@ -175,13 +175,13 @@ rule virus_mapping:
 	input:
 		"annot/{sample}_contigs.fna"
 	output:
-		v1 = "viralmap/contig/{sample}_mapped2virus.fastq",
-		v2 = "viralmap/contig/{sample}_mapped2virus.fasta",
-		v3 = "viralmap/contig/{sample}_mapped2virus_sorted.bam"
+		v1 = "viralmap/{sample}_mapped2virus.fastq",
+		v2 = "viralmap/{sample}_mapped2virus.fasta",
+		v3 = "viralmap/{sample}_mapped2virus_sorted.bam"
 	params:
 		database = config["virus_db"],
 		org = "viruses",
-		outdir = "viralmap/contig/",
+		outdir = "viralmap/",
 		tag = "mapped2virus",
 		cores = config["cores"]
 	shell:
@@ -238,12 +238,12 @@ use rule virus_mapping as host_mapping_2 with:
 rule results:
 	input:
 		f1 = "annot/{sample}_contigs.gbk",
-		f2 = "viralmap/contig/{sample}_mapped2virus_sorted.bam"
+		f2 = "viralmap/{sample}_mapped2virus_sorted.bam"
 	output:
-		r1 = "results/contig/{sample}_aln.csv"
+		r1 = "results/{sample}_aln.csv"
 	params:
 		script = "annot_resume.py",
-		outdir = "results/contig",
+		outdir = "results/",
 		tag = "contig"
 	conda:
 		"envs/results.yml"
@@ -273,13 +273,13 @@ use rule results as results_int with:
 	input:
 		f1 = "annot/{sample}_contigs.gbk",
 		f2 = "humanmap/{sample}_mapped2human_sorted.bam",
-		f3 = "results/contig/{sample}_aln.csv"
+		f3 = "results/{sample}_aln.csv"
 	output:
-		r1 = "results/contig/{sample}_int_aln.csv",
-		r2 = "results/contig/{sample}_int_id.csv"
+		r1 = "results/{sample}_int_aln.csv",
+		r2 = "results/{sample}_int_id.csv"
 	params:
 		script = "annot_int.py",
-		outdir = "results/contig",
+		outdir = "results",
 		tag = "integration"
 
 
@@ -290,8 +290,7 @@ use rule results as results_int with:
 
 rule plot_results:
 	input:
-		p1 = "results/contig/{sample}_aln.csv",
-		p2 = "results/cluster/{sample}_aln.csv"
+		"results/{sample}_aln.csv"
 	output:
 		"{sample}_log.a"
 	conda:
@@ -301,11 +300,7 @@ rule plot_results:
 
 		printf  "\n###Generating result plots for contigs###\n\n"
 
-		Rscript --vanilla scripts/Plot.R {input.p1}  results/contig/plots/{wildcards.sample}/
-
-		printf  "\n###Generating result plots for clusters###\n\n"
-
-		Rscript --vanilla scripts/Plot.R {input.p2}  results/cluster/plots/{wildcards.sample}/
+		Rscript --vanilla scripts/Plot.R {input}  results/contig/plots/{wildcards.sample}/
 
 		echo "Workflow runned properly for {wildcards.sample}" > {output}
 
@@ -319,9 +314,9 @@ rule plot_results:
 
 rule plot_int:
 	input:
-		"results/contig/{sample}_int_id.csv"
+		"results/{sample}_int_id.csv"
 	output:
-		"{sample}_int_log.a"
+		"{sample}_int_log.b"
 	conda:
 		"envs/plot_results.yml"
 	shell:
