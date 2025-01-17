@@ -134,26 +134,32 @@ snakemake --cores 8 --use-conda --conda-frontend conda sample_log.a sample_int_l
 
 ## Results
 
-A new directory named results will be created after running the pipeline. It will contain two subfolders named contig and cluster, which contain the results for the assembles contigs and the clustered contigs respectively and have similar file organization. The files found in these directories are:
+A new directory named `results` will be created after running the pipeline, containing the next files:
 
 | File | Format | Description  |
 | ---- | --------- | ------------ |
 | sample_all.fasta | fasta | Contains all the coding sequences found in all assembled contigs or clustered sequences |
 | sample_all_aa.fasta | protein fasta | Contains the translation of all the coding sequences found in all assembled contigs or clustered sequences |
-| sample_annotated.fasta | fasta | Contains all the coding sequences found in all assembled contigs or clustered sequences and that where annotated to some known gene or protein product |
-| sample_annotated_aa.fasta | protein fasta | Contains the translation of all the coding sequences found in all assembled contigs or clustered sequences and that where annotated to some known gene or protein product |
-| sample_annotated.csv | csv | Contains the gene identity for the annotated CDSs and shows if the LxCxE motif is present |
-| sample_ref_genome_maps.csv | csv | Shows if any sequence was mapped to the viral reference database, to which reference sequence and gives a coverage index |
-| sample_aln.csv | csv | Gives information about which contigs or cluster sequences mapped to the reference virus database and in which genomes and positions |
-| sample_int_aln.csv | csv | Gives information about which contigs or cluster sequences mapped to the host genome and if they code for any protein |
-| sample_int_id.csv | csv | File neccesary for the plotting function of the contigs or cluster sequences mapped to the host genome |
+| sample_annotated.fasta | fasta | Contains all the coding sequences found in all assembled contigs and that where annotated to some known gene or protein product |
+| sample_annotated_aa.fasta | protein fasta | Contains the translation of all the coding sequences found in all assembled contigs and that where annotated to some known gene or protein product |
+| sample_annotated.csv | csv | Contains the gene identity for the annotated CDSs and shows if the LxCxE motif is present (for contigs mapped to viral database) |
+| sample_ref_genome_maps.csv | csv | Shows if any sequence was mapped to the viral reference database, to which reference sequence and provides a coverage index |
+| sample_aln.csv | csv | Contains information about which contig sequences mapped to the reference viral database and in which genomes and positions |
+| sample_int_aln.csv | csv | Gives information about which contigs mapped to the host genome and if they code for any protein |
+| sample_int_id.csv | csv | File neccesary for the plotting function of the contigs mapped to the host genome |
 
+Inside the `results` folder, there is a `plots` folder, which contains a subfolder named after the _sample_ and have the next plots:
 
-
-
-
-
-
+| File | Description|
+| ---- | ---------- |
+| all.png | Ideogram showing the locations in the host genome of the assembled contigs mapped to it in png format|
+| all.svg | Ideogram showing the locations in the host genome of the assembled contigs mapped to it in svg format|
+| size.png | Ideogram showing the locations in the host genome of the assembled contigs mapped to it and their respective sizes in bp, png format|
+| size.svg | Ideogram showing the locations in the host genome of the assembled contigs mapped to it and their respective sizes in bp, svg format|
+| contig_length.jpg | Distribution of length in bp of contigs mapped to the host genome|
+| contig_log_length.jpg | Distribution of logarithmic length of contigs mapped to the host genome|
+| virus_mapped.jpg | One file for each viral genome with contigs mapped to it. Shows the virus genome and the position in which the assembled contigs mapped to it |
+| NO_VIRUS.jpg | File generated in case no contig mapped to any of the viral genomes in the database |
 
 
 
