@@ -1,10 +1,8 @@
 # AGaVe 
-(Analysis of Genomic and Viral Elements)
-
 
 ## Introduction
 
-AGaVE is a pipeline designed for the search of viral sequences in RNAseq samples from human tissues or human related samples. This pipeline was designed used previously developed tools that are available via conda and organized using the snakemake workflow management system. A basic diagram of the pipeline is shown in the next image.
+AGaVE (Analysis of Genomic and Viral Elements) is a pipeline designed for the search of viral sequences in RNAseq samples from human tissues or human related samples. This pipeline was designed using previously developed tools that are available via conda and organized using the snakemake workflow management system. A basic diagram of the pipeline is shown in the next image.
 
 <p align="center" width="100%">
     <img width="50%" src="https://github.com/GerardoCMM/RNAseq-Retinoblastoma/blob/main/dag.svg"> 
@@ -37,15 +35,15 @@ After running the previous commands, follow the instructions for a full installa
 Clone repository:
 
 ```
-git clone https://github.com/GerardoCMM/RNAseq-Retinoblastoma.git
+git clone https://github.com/GerardoCendejas/AGaVE.git
 ```
 
 Create conda environment:
 
 ```
-cd RNAseq-Retinoblastoma
+cd AGaVE
 
-conda env create -f rna_seq_analysis.yml
+conda env create -f agave.yml
 ```
 
 ## Usage
@@ -55,7 +53,7 @@ conda env create -f rna_seq_analysis.yml
 This is neccesary every time you want to run the pipeline.
 
 ```
-conda activate rna_seq_analysis
+conda activate agave
 ```
 
 ### Databases
@@ -90,7 +88,7 @@ You can index the database with minimap2 with this command:
 minimap2 -d /path/to/viral/index.mmi file.fasta
 ```
 
-Where `file.fasta` is the fasta file containing the reference sequences and `/path/to/viral/index.mm` is the final location of the indexed database. Please note how the reference database can be easily modified and replaced just by indexing a different fasta file that may be more relevant for you. 
+Where `file.fasta` is the fasta file containing the reference sequences and `/path/to/viral/index.mm` is the final location of the indexed database. Please note how the reference database can be easily modified and replaced just by indexing a different fasta file that may be more relevant to you. 
 
 ### Config file
 
@@ -100,6 +98,7 @@ genome_dir : "/path/to/genomeDir"
 virus_db : "/path/to/viral/index.mmi"
 human_minimap : "/path/to/genomic/index.mmi"
 cores : "8"
+kmers : "31,53,75,91"
 ```
 
 ### Samples
