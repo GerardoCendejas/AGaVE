@@ -1,4 +1,12 @@
+# Location of the .yml file with configuration parameters
+
 configfile: "./config.yml"
+
+
+
+
+
+# Quality control of the raw .fastq files with trimmomatic
 
 rule quality_control:
 	input:
@@ -18,6 +26,24 @@ rule quality_control:
 		rm clean/*U.fastq
 
 		"""
+
+	# PE                                               : indicates paired end files
+	# -basein {input.r1}                               : input .fastq file
+	# -baseout clean/{wildcards.sample}.fastq          : outpul .fastq file
+	# ILLUMINACLIP:adapters.fa:2:30:10:2:keepBothReads 
+	##             adapters.fa                         : illumina adapters file
+	##                        :2                       : seed mismatches
+	##                          :30                    : palindrome clip threshold
+	##                             :10                 : simple clip threshold
+	##                                :2               : minAdapterLength
+	# SLIDINGWINDOW:4:28                               : window size and required quality
+	# MINLEN:75                                        : minimum length for the reads
+
+
+
+
+
+# Mapping the quality checked reads to the host genome
 
 rule host_mapping:
 	input:
@@ -48,6 +74,20 @@ rule host_mapping:
 		
 		"""
 
+	# STAR command for RNA-seq alignment to host genome
+    # -runThreadN {params.cores}                 : use multiple threads for speed
+    # --genomeDir {params.genome_dir}            : directory with host reference genome
+    # --sjdbGTFfile {params.genome_dir}/*.gtf    : gene annotation GTF file
+    # --sjdbOverhang 150                         : read length minus 1 for splice junction detection
+    # samtools view -b -f 4                      : extract unmapped reads from BAM file
+    # bedtools bamtofastq                        : convert BAM to FASTQ for unmapped reads
+
+
+
+
+
+# De novo assembly of unmapped reads to host genome
+
 rule assembly:
 	input:
 		u1 = "unmapped/{sample}_1.fastq",
@@ -72,6 +112,20 @@ rule assembly:
 		rm -rf assembly/{wildcards.sample}
 
 		"""
+
+	# rnaspades.py                               : RNA-Seq de novo assembler
+    # -1 {input.u1} -2 {input.u2}                : input paired-end FASTQ files
+    # -k 51                                      : k-mer size for assembly
+    # -o assembly/{wildcards.sample}/            : output directory for assembly
+    # --threads {params.cores}                   : number of threads to use
+    # --memory 60                                : memory limit (in GB)
+    # -k {params.kmers}                          : k-mer sizes to use for assembly
+
+
+
+
+
+# Annotating the assembled contigs
 
 rule annotate_contigs:
 	input:
@@ -101,32 +155,21 @@ rule annotate_contigs:
 
 		"""
 
-rule contig_clustering:
-	input:
-		"assembly/{sample}_contigs.fasta"
-	output:
-		"clusters/{sample}_repr.fasta"
-	shell:
-		"""
-		
-		printf  "\n###Getting representative sequences from assembled contigs of {wildcards.sample} using CD-HIT###\n\n"
+	# prokka                                      : genome annotation tool
+    # --addgenes                                  : add gene predictions to the output
+    # --outdir {params.outdir}                    : directory to store annotation files
+    # --locustag {wildcards.sample}               : tag for contig annotation
+    # --kingdom Viruses                           : specify viral kingdom
+    # --prefix {wildcards.sample}_{params.prefix} : output file prefix
+    # --metagenome                                : treat as metagenomic data
+    # --mincontiglen 1                            : minimum contig length for annotation
+    # --cpus {params.cores}                       : number of CPUs to use for annotation
 
-		cd-hit-est -i {input} -o clusters/{wildcards.sample} -c 0.95 -n 8
 
-		mv clusters/{wildcards.sample} {output}
-	
-		"""
 
-use rule annotate_contigs as annotate_clusters with:
-	input:
-		"clusters/{sample}_repr.fasta"
-	output:
-		"annot/{sample}_clusters.gbk",
-		"annot/{sample}_clusters.fna"
-	params:
-		outdir = "annot/cluster/",
-		prefix = "clusters",
-		cores = config["cores"]
+
+
+# Mapping assembled contigs to viral database
 
 rule virus_mapping:
 	input:
@@ -161,19 +204,19 @@ rule virus_mapping:
 
 		"""
 
-use rule virus_mapping as virus_mapping_clus with:
-	input:
-		"annot/{sample}_clusters.fna"
-	output:
-		v1 = "viralmap/cluster/{sample}_mapped2virus.fastq",
-		v2 = "viralmap/cluster/{sample}_mapped2virus.fasta",
-		v3 = "viralmap/cluster/{sample}_mapped2virus_sorted.bam"
-	params:
-		database = config["virus_db"],
-		org = "viruses",
-		outdir = "viralmap/cluster/",
-		tag = "mapped2virus",
-		cores = config["cores"]
+	# minimap2                                    : align contigs to a viral database
+    # -ax splice --cs -C5 -L -t {params.cores}    : alignment options for RNA-seq data
+    # samtools view -b -F 4                       : filter out unmapped reads
+    # bedtools bamtofastq                         : convert BAM to FASTQ for downstream analysis
+    # sed -n '1~4s/^@/>/p;2~4p'                   : convert FASTQ to FASTA format
+    # samtools sort                               : sort the BAM file
+    # samtools index -b                           : index the sorted BAM file
+
+
+
+
+
+# Mapping assembled contigs to host genome
 
 use rule virus_mapping as host_mapping_2 with:
 	input:
@@ -189,6 +232,8 @@ use rule virus_mapping as host_mapping_2 with:
 		tag = "mapped2human",
 		cores = config["cores"]
 
+
+# Writing result files
 
 rule results:
 	input:
@@ -211,16 +256,18 @@ rule results:
 
 		"""
 
-use rule results as results_cluster with:
-	input:
-		f1 = "annot/{sample}_clusters.gbk",
-		f2 = "viralmap/cluster/{sample}_mapped2virus_sorted.bam"
-	output:
-		r1 = "results/cluster/{sample}_aln.csv"
-	params:
-		script = "annot_resume.py",
-		outdir = "results/cluster",
-		tag = "cluster"
+	# python scripts/{params.script}              : custom script to process results
+    # {input.f1}                                  : input GenBank file (contigs)
+    # {wildcards.sample}                          : sample identifier
+    # {input.f2}                                  : input BAM file with viral mappings
+    # {params.outdir}                             : output directory
+    # {params.tag}                                : task tag for the results
+
+
+
+
+
+# Writing result files for genome integration analysis
 
 use rule results as results_int with:
 	input:
@@ -235,6 +282,11 @@ use rule results as results_int with:
 		outdir = "results/contig",
 		tag = "integration"
 
+
+
+
+
+# Plotting results
 
 rule plot_results:
 	input:
@@ -258,6 +310,12 @@ rule plot_results:
 		echo "Workflow runned properly for {wildcards.sample}" > {output}
 
 		"""
+
+
+
+
+
+# Plotting results for genome integration analysis
 
 rule plot_int:
 	input:
