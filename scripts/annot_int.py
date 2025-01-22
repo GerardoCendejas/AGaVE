@@ -1,3 +1,5 @@
+# Importing requiered libraries
+
 import sys
 
 from Bio import SeqIO
@@ -10,11 +12,15 @@ import re
 
 import pandas as pd
 
-# Load gbk file
+
+
+# Loading gbk annotation file of assembled contigs
 
 aln_file=sys.argv[3]
 
 records = list(SeqIO.parse(sys.argv[1], "genbank"))
+
+
 
 # outdir
 
@@ -23,16 +29,21 @@ outdir = sys.argv[4]
 if outdir[-1]!="/":
     outdir = outdir+"/"
 
-### Creando diccionarios necesarios
+
+
+# Creating required dictionaries
 
 strand = {0:1,16:-1,256:1,272:-1,2048:1,2064:-1}
 
 aln = {0:"primary",16:"primary",256:"not primary",272:"not primary",2048:"supplementary",2064:"supplementary"}
 
 mapped = {"M":1,"D":0,"N":0,"I":2,"S":0,"H":0}
+
 keys = list(mapped.keys())
 
-### Definiendo función para interpretar CIGAR
+
+
+# Defining a function to interpret cigar
 
 def get_cigar(x):
     num = re.split(r'\D+',x)
@@ -65,6 +76,10 @@ def get_cigar(x):
             
     return(",".join(final))
 
+
+
+# Function to get mapped length in bp from cigar string
+
 def get_mapped_len(x):
     num = re.split(r'\D+',x)
     tmp = re.split(r'\d',x)
@@ -87,11 +102,15 @@ def get_mapped_len(x):
             
     return(mapped_len)
 
-# Importando archivo en formato SAM
+
+
+# Importing SAM file to pysam
 
 samfile = pysam.AlignmentFile(aln_file)
 
-### Creando archivo de información de alineamiento.
+
+
+# Creating csv file with alignment information to viral genomes for plotting
 
 sourceFile = open(f'{outdir}{sys.argv[2]}_int_aln.csv', 'w')
 
@@ -103,7 +122,9 @@ for i in range(0,len(samfile.get_index_statistics()),1):
 
 sourceFile.close()
 
-# Adding information about annotations
+
+
+# Adding the contig size
 
 file = pd.read_csv(f'{outdir}{sys.argv[2]}_int_aln.csv',header=None)
 
@@ -118,6 +139,10 @@ for contig in file[1]:
     contig_len_fin.append(contig_len[contig.split("|")[2]])
 
 file[7] = contig_len_fin
+
+
+
+# Adding information about annotations
 
 def get_annot_from_contig(record):
     res = []
@@ -141,6 +166,10 @@ for contig in file[1]:
     annot_col.append(annot[contig.split("|")[2]])
 
 file[8] = annot_col
+
+
+
+# Adding information about if contig mapped to viral genome
 
 file_2 = pd.read_csv(f'{outdir}{sys.argv[2]}_aln.csv',header=None)
 
@@ -171,6 +200,9 @@ def id_chr(id):
     else:
         return(None)
 
+
+
+# File for plotting ideogram of second mapping to host genome
 
 sourceFile = open(f'{outdir}{sys.argv[2]}_int_id.csv', 'w')
 

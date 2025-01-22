@@ -1,12 +1,30 @@
 #!/usr/bin/env Rscript
 
+# To accept arguments from command line
+
 args = commandArgs(trailingOnly=TRUE)
+
+
+
+# Loading required libraries
 
 library(ggplot2)
 
+
+
+# Loading csv file with data to plot
+
 data <- read.csv(args[1], header=FALSE)
 
+
+
+# Setting the output directory
+
 outdir <- args[2]
+
+
+
+# Function to plot the reference genome (as a red rectangle)
 
 plot_ref <- function(x){
   g <- ggplot(data=x)+geom_rect(data=x, mapping=aes(xmin=0, xmax=V4, ymin=-0.15, ymax=0.15),
@@ -29,16 +47,28 @@ plot_ref <- function(x){
   return(g)
 }
 
+
+
+# Function to plot unmapped regions of contigs
+
 plot_not <- function(g,x1,x2,ypos){
   g <- g+geom_segment(aes_string(x=x1,xend=x2,y=ypos,yend=ypos))
   return(g)
 }
+
+
+
+# Function to plot mapped regions of contigs
 
 plot_mapped <- function(g,x1,x2,ypos,fill,alpha){
   g <- g+geom_rect(aes_string(xmin=x1,xmax=x2,ymin=ypos-0.15,ymax=ypos+0.15),
                    color="black",fill=fill,alpha=alpha)
   return(g)
 }
+
+
+
+# Function to plot whole contigs (x is the row of the sample_aln.csv file)
 
 plot_contig <- function(g,x,ypos){
   
@@ -108,6 +138,10 @@ plot_contig <- function(g,x,ypos){
   
 }
 
+
+
+# Defining function for plotting all the contigs mapped to viral genome
+
 plot_aln <- function(df){
   g <- plot_ref(df[1,])
   
@@ -119,16 +153,37 @@ plot_aln <- function(df){
   
 }
 
+
+
+# Defining function for adding annotations of contigs
+
 plot_annot <- function(g,x,ypos){
-  annot <-  strsplit(x[[7]],split=",")[[1]]
-  
-  g <- g+annotate("segment", x = x[[5]]+as.integer(annot[2])-1, xend = x[[5]]+as.integer(annot[3]),
+
+  annot <-  strsplit(x[[9]],split=",")[[1]]
+
+  for(i in 1:(length(annot)/3)){
+
+    x1 <- as.integer(annot[i*3-1])
+    x2 <- as.integer(annot[i*3])
+
+    if(x[[7]]!="true"){
+      x1 <- x[[8]]-x1
+      x2 <- x[[8]]-x2
+    }
+ 
+
+    g <- g+annotate("segment", x = x[[5]]+x1-1, xend = x[[5]]+x2,
                   y = ypos, yend = ypos,
                   arrow = arrow(ends = "both", angle = 90, length = unit(.1,"cm")))+
-    geom_text(aes(x = x[[5]]+((as.integer(annot[2])-1+as.integer(annot[3]))/2),y=ypos-0.125,label=annot[1]))
+    geom_text(aes(x = x[[5]]+((x1+x2)/2),y=ypos-0.125,label=annot[i*3-2]))
+  }
   
   return(g)
 }
+
+
+
+# Defining function for plotting all contigs mapped to a viral genome and their annotations
 
 plot_aln_annot <- function(df){
   g <- plot_ref(df[1,])
@@ -142,7 +197,15 @@ plot_aln_annot <- function(df){
   
 }
 
+
+
+# Number of different viral genomes with contigs mapped to them
+
 lev <- levels(as.factor(data$V1))
+
+
+
+# Iterate through each viral genome and plot with and without annotations
 
 if(!"0"%in%lev){
 

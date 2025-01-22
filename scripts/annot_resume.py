@@ -1,3 +1,5 @@
+# Importing requiered libraries
+
 import sys
 
 from Bio import SeqIO
@@ -10,11 +12,15 @@ import pysam
 
 import re
 
-# Load gbk file
+
+
+# Loading gbk annotation file of assembled contigs
 
 aln_file=sys.argv[3]
 
 records = list(SeqIO.parse(sys.argv[1], "genbank"))
+
+
 
 # outdir
 
@@ -23,7 +29,10 @@ outdir = sys.argv[4]
 if outdir[-1]!="/":
     outdir = outdir+"/"
 
-# Escribir archivo fasta para todos los ORF detectados
+
+
+
+# Writing fasta file with all ORFs
 
 sourceFile = open(f'{outdir}{sys.argv[2]}_all.fasta', 'w')
 
@@ -34,7 +43,9 @@ for record in records:
 
 sourceFile.close()
 
-# Escribir archivo fasta con secuencias de AMINOACIDOS de todos los ORF detectados
+
+
+# Writing fasta file with aminoacid sequences for all ORFs
 
 sourceFile = open(f'{outdir}{sys.argv[2]}_all_aa.fasta', 'w')
 
@@ -45,7 +56,7 @@ for record in records:
 
 sourceFile.close()
 
-# Escribir archivo fasta con secuencias con anotacion diferente a hypothetical protein
+# Writing fasta file of sequences with annotation different from hypotetical protein
 
 sourceFile = open(f'{outdir}{sys.argv[2]}_annotated.fasta', 'w')
 
@@ -57,7 +68,7 @@ for record in records:
 
 sourceFile.close()
 
-# Escribir archivo fasta con secuencias de AMINOACIDOS con anotacion diferente a hypothetical protein
+# Writing fasta file of aminoacid sequence for ORFs with annotation different from hypotetical protein
 
 sourceFile = open(f'{outdir}{sys.argv[2]}_annotated_aa.fasta', 'w')
 
@@ -69,7 +80,7 @@ for record in records:
 
 sourceFile.close()
 
-# Escribir archivo tabular con las anotaciones de cara transcrito y el ID de la proteína a la cuál es idéntico.
+# Writing a csv file with the annotations for each contig and the protein ID of the identical protein
 
 p = re.compile(r'L\wC\wE')
 
@@ -85,7 +96,7 @@ for record in records:
 
 sourceFile.close()
 
-### Creando diccionarios necesarios
+# Creating dictionaries
 
 strand = {0:1,16:-1,256:1,272:-1,2048:1,2064:-1}
 
@@ -94,7 +105,7 @@ aln = {0:"primary",16:"primary",256:"not primary",272:"not primary",2048:"supple
 mapped = {"M":1,"D":0,"N":0,"I":2,"S":0,"H":0}
 keys = list(mapped.keys())
 
-### Definiendo función para interpretar CIGAR
+# Defining a function to interpret cigar
 
 def get_cigar(x):
     num = re.split(r'\D+',x)
@@ -127,6 +138,9 @@ def get_cigar(x):
             
     return(",".join(final))
 
+
+# Function to get mapped length in bp from cigar string
+
 def get_mapped_len(x):
     num = re.split(r'\D+',x)
     tmp = re.split(r'\d',x)
@@ -149,9 +163,9 @@ def get_mapped_len(x):
             
     return(mapped_len)
 
-# Importando archivo en formato SAM
+# Generating results csv file for contigs mapped to viral genomes in database
 
-if (os.path.getsize(f"viralmap/{sys.argv[5]}/{sys.argv[2]}_mapped2virus.fasta") == 0):
+if (os.path.getsize(f"viralmap/{sys.argv[2]}_mapped2virus.fasta") == 0):
 
     # Generating empty files with all zeros
 
@@ -170,16 +184,17 @@ if (os.path.getsize(f"viralmap/{sys.argv[5]}/{sys.argv[2]}_mapped2virus.fasta") 
 
     sourceFile = open(f'{outdir}{sys.argv[2]}_aln.csv', 'w')
 
-    print("0,0,0,0,0,0,0",file=sourceFile)
+    print("0,0,0,0,0,0,0,0,0",file=sourceFile)
 
     sourceFile.close()
 
 else:
 
+    # Importing SAM file
 
     samfile = pysam.AlignmentFile(aln_file)
 
-    ### Creando archivo que dice el número de  contigs alineados a cada reference genome
+    # Results files, when contigs mapped to at least one viral genome (Includes viral genome coverage index)
 
     genomes = []
     count=[]
@@ -206,7 +221,7 @@ else:
 
     data.to_csv(f"{outdir}{sys.argv[2]}_ref_genome_maps.csv",index=False)
 
-    ### Creando archivo de información de alineamiento.
+    # Creating csv file with alignment information to viral genomes for plotting
 
     sourceFile = open(f'{outdir}{sys.argv[2]}_aln.csv', 'w')
 
@@ -214,13 +229,27 @@ else:
         ref = samfile.get_reference_name(i)
         iter = samfile.fetch(ref,0,samfile.get_reference_length(ref))
         for x in iter:
-            print('%s,%s,%s,%s,%s,"%s"'%(ref,str(x).split('\t')[0],aln[int(str(x).split('\t')[1])],samfile.get_reference_length(ref),str(x).split('\t')[3],get_cigar(str(x).split('\t')[5])),file=sourceFile)
+            print('%s,%s,%s,%s,%s,"%s",%s'%(ref,str(x).split('\t')[0],aln[int(str(x).split('\t')[1])],samfile.get_reference_length(ref),str(x).split('\t')[3],get_cigar(str(x).split('\t')[5]),str(x.is_forward())),file=sourceFile)
 
     sourceFile.close()
 
-    # Adding information about annotations
+    # Adding the contig size
 
     file = pd.read_csv(f'{outdir}{sys.argv[2]}_aln.csv',header=None)
+
+    contig_len = {}
+
+    for record in records:
+        contig_len[record.name]=len(record.seq)
+
+    contig_len_fin = []
+
+    for contig in file[1]:
+        contig_len_fin.append(contig_len[contig.split("|")[2]])
+
+    file[7] = contig_len_fin
+
+    # Adding information about annotations
 
     def get_annot_from_contig(record):
         res = []
@@ -243,6 +272,6 @@ else:
     for contig in file[1]:
         annot_col.append(annot[contig.split("|")[2]])
 
-    file[6] = annot_col
+    file[8] = annot_col
 
     file.to_csv(f'{outdir}{sys.argv[2]}_aln.csv',index=False,header=None)

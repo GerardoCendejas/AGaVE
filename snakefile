@@ -244,7 +244,6 @@ rule results:
 	params:
 		script = "annot_resume.py",
 		outdir = "results/",
-		tag = "contig"
 	conda:
 		"envs/results.yml"
 	shell:
@@ -252,7 +251,7 @@ rule results:
 
 		printf  "\n###Generating result files for {params.tag}###\n\n"
 
-		python scripts/{params.script} {input.f1} {wildcards.sample} {input.f2} {params.outdir} {params.tag}
+		python scripts/{params.script} {input.f1} {wildcards.sample} {input.f2} {params.outdir}
 
 		"""
 
@@ -279,8 +278,7 @@ use rule results as results_int with:
 		r2 = "results/{sample}_int_id.csv"
 	params:
 		script = "annot_int.py",
-		outdir = "results",
-		tag = "integration"
+		outdir = "results"
 
 
 
@@ -300,7 +298,7 @@ rule plot_results:
 
 		printf  "\n###Generating result plots for contigs###\n\n"
 
-		Rscript --vanilla scripts/Plot.R {input}  results/contig/plots/{wildcards.sample}/
+		Rscript --vanilla scripts/Plot.R {input}  results/plots/{wildcards.sample}/
 
 		echo "Workflow runned properly for {wildcards.sample}" > {output}
 
