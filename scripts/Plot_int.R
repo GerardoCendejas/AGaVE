@@ -1,24 +1,50 @@
 #!/usr/bin/env Rscript
 
+# To accept arguments from command line
+
 args = commandArgs(trailingOnly=TRUE)
+
+
+
+# Loading required libraries
 
 library(RIdeogram)
 library(stringr)
 library(ggplot2)
 
+
+
+# Loading file with information of second mapping to host genome
+
 int <- read.csv(args[1],header = TRUE)
 
+
+
+# Setting output directory
+
 outdir <- args[2]
+
+
+
+# Loading human genome and human karyotype
 
 data(human_karyotype, package="RIdeogram")
 
 human_karyotype <- human_karyotype[-c(24),]
 
+
+
+# Loading cytogenetic bands file
+
 gene_density <- read.csv("scripts/bands.txt")
 
-# Density plot for lengths
+
+
+# Density plot for lengths of contigs mapped to second mapping to host genome
 
 cols = c("black","#0000ff","#ffc0cb","#ffa500")
+
+
 
 # Normal plot
 
@@ -29,6 +55,8 @@ g <- ggplot(int, aes(x = len,fill=Type)) +
   ggtitle("Length distribution of mapped contigs")
 
 ggsave(paste(outdir,"contig_length.jpg",sep=""),g,width = 1200,height = 800,units = "px",dpi=200)
+
+
 
 # Plot of log lengths
 
@@ -41,7 +69,12 @@ g_log <- ggplot(int, aes(x = log10(len), fill = Type)) +
 ggsave(paste(outdir,"contig_log_length.jpg",sep=""),g_log,width = 1200,height = 800,units = "px",dpi=200)
 
 
+
 # Plotting the ideograms
+
+
+
+# Choosing 300 random contigs
 
 for_plot <- int[int[,2]!="triangle",]
 
@@ -53,7 +86,13 @@ if(nrow(for_plot)>300){
 
 
 
+# Including all viral contigs mapped to host genome too
+
 for_plot <- rbind(for_plot[rows,],int[int[,2]=="triangle",])
+
+
+
+# Creating ideogram of all selected contigs
 
 ideogram(karyotype = human_karyotype, overlaid = gene_density, label = for_plot,
          label_type = "marker",colorset1 = c("#ffffff", "#000000"))
@@ -65,6 +104,10 @@ file.rename(from="chromosome.png",to=paste(outdir,"all.png"))
 file.rename(from="chromosome.svg",to=paste(outdir,"all.svg"))
 
 if("triangle"%in%levels(int[,2])){
+
+
+
+# Plotting ideogram of only viral contigs
 
 ideogram(karyotype = human_karyotype, overlaid = gene_density, label = int[int[,2]=="triangle",],
          label_type = "marker",colorset1 = c("#ffffff", "#000000"))
@@ -78,6 +121,7 @@ file.rename(from="chromosome.svg",to=paste(outdir,"viral.svg"))
 }
 
   
+
 # Ideograms for size category
 
 for(i in 1:length(for_plot$len)){
@@ -98,6 +142,10 @@ for(i in 1:length(for_plot$len)){
     for_plot$color[i] <- "990623"
   }
 }
+
+
+
+# Plotting the ideogram
 
 ideogram(karyotype = human_karyotype, overlaid = gene_density, label = for_plot,
          label_type = "marker",colorset1 = c("#ffffff", "#000000"))
