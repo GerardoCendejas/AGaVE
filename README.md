@@ -123,13 +123,13 @@ Where `SRRXXXXXX` is the run ID.
 Checking the steps to be run (from the base of the repo):
 
 ```
-snakemake -np sample_log.a sample_int_log.b
+snakemake -np sample_find.log sample_int.log
 ```
 
 Running the pipeline with a maximum of 8 cores:
 
 ```
-snakemake --cores 8 --use-conda --conda-frontend conda sample_log.a sample_int_log.b
+snakemake --cores 8 --use-conda --conda-frontend conda sample_find.log sample_int.log
 ```
 
 ## Results

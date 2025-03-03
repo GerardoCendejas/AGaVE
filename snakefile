@@ -233,23 +233,23 @@ use rule virus_mapping as host_mapping_2 with:
 		cores = config["cores"]
 
 
-# Writing result files
+# Writing result files for virus finding step
 
-rule results:
+rule virus_find:
 	input:
 		f1 = "annot/{sample}_contigs.gbk",
 		f2 = "viralmap/{sample}_mapped2virus_sorted.bam"
 	output:
 		r1 = "results/{sample}_aln.csv"
 	params:
-		script = "annot_resume.py",
-		outdir = "results/",
+		script = "virus_find.py",
+		outdir = "results/"
 	conda:
 		"envs/results.yml"
 	shell:
 		"""
 
-		printf  "\n###Generating result files for {params.tag}###\n\n"
+		printf  "\n###Generating result files for virus finding step###\n\n"
 
 		python scripts/{params.script} {input.f1} {wildcards.sample} {input.f2} {params.outdir}
 
@@ -268,7 +268,7 @@ rule results:
 
 # Writing result files for genome integration analysis
 
-use rule results as results_int with:
+use rule virus_find as int_find with:
 	input:
 		f1 = "annot/{sample}_contigs.gbk",
 		f2 = "humanmap/{sample}_mapped2human_sorted.bam",
@@ -277,7 +277,7 @@ use rule results as results_int with:
 		r1 = "results/{sample}_int_aln.csv",
 		r2 = "results/{sample}_int_id.csv"
 	params:
-		script = "annot_int.py",
+		script = "int_find.py",
 		outdir = "results"
 
 
@@ -286,11 +286,11 @@ use rule results as results_int with:
 
 # Plotting results
 
-rule plot_results:
+rule plot_virus:
 	input:
 		"results/{sample}_aln.csv"
 	output:
-		"{sample}_log.a"
+		"{sample}_find.log"
 	conda:
 		"envs/plot_results.yml"
 	shell:
@@ -314,7 +314,7 @@ rule plot_int:
 	input:
 		"results/{sample}_int_id.csv"
 	output:
-		"{sample}_int_log.b"
+		"{sample}_int.log"
 	conda:
 		"envs/plot_results.yml"
 	shell:
@@ -328,3 +328,61 @@ rule plot_int:
 
 		"""
 
+rule virus_mapping_reads:
+	input:
+		u1 = "unmapped/{sample}_1.fastq",
+		u2 = "unmapped/{sample}_2.fastq"
+	output:
+		c1 = "viralcount/{sample}_mapped2virus_sorted.bam"
+	params:
+		database = config["virus_db"],
+		outdir = "viralcount/",
+		tag = "mapped2virus",
+		cores = config["cores"]
+	shell:
+		"""
+
+		printf  "\n###Mapping reads to viral database###\n\n"
+
+		minimap2 -ax sr -t {params.cores} {params.database} {input.u1} {input.u2} > {params.outdir}{wildcards.sample}_aln.sam
+
+		samtools view -b -F 4 {params.outdir}{wildcards.sample}_aln.sam > {params.outdir}{wildcards.sample}_{params.tag}.bam
+
+		samtools sort {params.outdir}{wildcards.sample}_{params.tag}.bam -o {output.c1}
+
+		samtools index -b {output.c1}
+
+		rm {params.outdir}*.sam {params.outdir}{wildcards.sample}_{params.tag}.bam
+
+		"""
+
+rule virus_count:
+	input:
+		c1 = "viralcount/{sample}_mapped2virus_sorted.bam",
+		c2 = "annot/{sample}.gbk",
+		c3 = "results/{sample}_aln.csv",
+		c4 = "results/{sample}_ref_genome_maps.csv"
+	output:
+		vc1 = "results/{sample}_virus.gff",
+		vc2 = "results/{sample}_virus_count.tab"
+	params:
+		script = "count_virus.py",
+		outdir = "viralcount/",
+		cores = config["cores"],
+		vir_fasta = config["virus_fasta"]
+	conda:
+		"envs/results.yml"
+	shell:
+		"""
+
+		printf  "\n###Generating result files for counts of viral CDSs###\n\n"
+
+		python scripts/{params.script} {input.c1} {input.c2} {input.c3} {input.c4} {params.vir_fasta} {wildcards.sample} {params.outdir}
+
+		liftoff {params.outdir}{wildcards.sample}_vir.fasta {params.outdir}{wildcards.sample}_vir_contig.fasta {params.outdir}{wildcards.sample}_vir_contig.gff -o {output.vc1}
+
+		telescope assign {input.c1} {output.vc1} --outdir {params.outdir}
+
+		cp {params.outdir}telescope-TE_counts.tsv {output.vc2}
+
+		"""
