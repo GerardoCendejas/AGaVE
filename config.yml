@@ -4,7 +4,7 @@ genome_dir : "/labs/csbig/gerardo/genomes/human/STAR"
 
 # Directory of the viral database in fasta format
 
-virus_db : "/home/gerardo/Documentos/Gera/Taller/Proyecto/Bases/virus/virus.fasta"
+virus_fasta : "/home/gerardo/Documentos/Gera/Taller/Proyecto/Bases/virus/virus.fasta"
 
 # Directory of the viral database in mmi format (for minimap2)
 

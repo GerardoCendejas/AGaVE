@@ -240,7 +240,8 @@ rule virus_find:
 		f1 = "annot/{sample}_contigs.gbk",
 		f2 = "viralmap/{sample}_mapped2virus_sorted.bam"
 	output:
-		r1 = "results/{sample}_aln.csv"
+		r1 = "results/{sample}_aln.csv",
+		r2 = "results/{sample}_ref_genome_maps.csv"
 	params:
 		script = "virus_find.py",
 		outdir = "results/"
@@ -328,12 +329,16 @@ rule plot_int:
 
 		"""
 
+
+
+
+
 rule virus_mapping_reads:
 	input:
 		u1 = "unmapped/{sample}_1.fastq",
 		u2 = "unmapped/{sample}_2.fastq"
 	output:
-		c1 = "viralcount/{sample}_mapped2virus_sorted.bam"
+		"viralcount/{sample}_mapped2virus_sorted.bam"
 	params:
 		database = config["virus_db"],
 		outdir = "viralcount/",
@@ -348,28 +353,53 @@ rule virus_mapping_reads:
 
 		samtools view -b -F 4 {params.outdir}{wildcards.sample}_aln.sam > {params.outdir}{wildcards.sample}_{params.tag}.bam
 
-		samtools sort {params.outdir}{wildcards.sample}_{params.tag}.bam -o {output.c1}
+		samtools sort {params.outdir}{wildcards.sample}_{params.tag}.bam -o {output}
 
-		samtools index -b {output.c1}
+		samtools index -b {output}
 
 		rm {params.outdir}*.sam {params.outdir}{wildcards.sample}_{params.tag}.bam
 
 		"""
 
+
+
+
+
+rule virus_genome_annotate:
+	input:
+		"results/{sample}_ref_genome_maps.csv"
+	output:
+		"viral_genomes/{sample}_annotated_virus.log"
+	params:
+		script = "annot_virus.py",
+		outdir = "viral_genomes/",
+		vir_fasta = config["virus_fasta"],
+		cores = config["cores"]
+	shell:
+		"""
+
+		printf  "\n###Generating gbk files for ###\n\n"
+
+		python scripts/{params.script} {input} {params.vir_fasta} {wildcards.sample} {params.outdir} {params.cores} {output}
+
+		"""
+
+
+
+
+
 rule virus_count:
 	input:
 		c1 = "viralcount/{sample}_mapped2virus_sorted.bam",
-		c2 = "annot/{sample}.gbk",
-		c3 = "results/{sample}_aln.csv",
-		c4 = "results/{sample}_ref_genome_maps.csv"
+		c2 = "results/{sample}_ref_genome_maps.csv",
+		c3 = "viral_genomes/{sample}_annotated_virus.log"
 	output:
-		vc1 = "results/{sample}_virus.gff",
-		vc2 = "results/{sample}_virus_count.tab"
+		vc1 = "results/{sample}_virus_count.tab",
+		vc2 = "{sample}_vc.log"
 	params:
 		script = "count_virus.py",
 		outdir = "viralcount/",
-		cores = config["cores"],
-		vir_fasta = config["virus_fasta"]
+		cores = config["cores"]
 	conda:
 		"envs/results.yml"
 	shell:
@@ -377,12 +407,14 @@ rule virus_count:
 
 		printf  "\n###Generating result files for counts of viral CDSs###\n\n"
 
-		python scripts/{params.script} {input.c1} {input.c2} {input.c3} {input.c4} {params.vir_fasta} {wildcards.sample} {params.outdir}
+		python scripts/{params.script} {input.c1} {input.c2} {wildcards.sample} {params.outdir}
 
-		liftoff {params.outdir}{wildcards.sample}_vir.fasta {params.outdir}{wildcards.sample}_vir_contig.fasta {params.outdir}{wildcards.sample}_vir_contig.gff -o {output.vc1}
+		telescope assign {input.c1} {params.outdir}{sample}.gff --outdir {params.outdir} -ncpu {params.cores}
 
-		telescope assign {input.c1} {output.vc1} --outdir {params.outdir}
+		cp {params.outdir}telescope-TE_counts.tsv {output.vc1}
 
-		cp {params.outdir}telescope-TE_counts.tsv {output.vc2}
+		rm {params.outdir}telescope*
+
+		echo "Workflow runned properly for viral count of reads in {wildcards.sample}" > {output.vc2}
 
 		"""
