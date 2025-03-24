@@ -409,7 +409,7 @@ rule virus_count:
 
 		python scripts/{params.script} {input.c1} {input.c2} {wildcards.sample} {params.outdir}
 
-		telescope assign {input.c1} {params.outdir}{sample}.gff --outdir {params.outdir} -ncpu {params.cores}
+		telescope assign {input.c1} {params.outdir}{wildcards.sample}.gff --outdir {params.outdir} -ncpu {params.cores}
 
 		cp {params.outdir}telescope-TE_counts.tsv {output.vc1}
 
