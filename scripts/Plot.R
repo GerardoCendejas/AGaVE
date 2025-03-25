@@ -189,7 +189,7 @@ plot_aln_annot <- function(df){
   
   for(i in 1:dim(df)[1]){
     g <- plot_contig(g,df[i,],i*(-0.6))
-    if(len(strsplit(df[i,9],split=","))>1){
+    if(length(strsplit(df[i,9],split=","))>1){
       g <- plot_annot(g,df[i,],i*(-0.6)-0.25)
     }
   }
