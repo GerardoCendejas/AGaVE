@@ -5,3 +5,5 @@ channels:
 dependencies:
  - prokka=1.14.6
  - biopython
+ - pandas
+ - pysam=0.19.1=py310hff46b53_1
