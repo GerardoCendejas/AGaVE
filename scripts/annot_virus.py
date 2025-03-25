@@ -53,6 +53,8 @@ for genome in genomes:
 
     if f"{genome}.gff" not in files:
 
+        print(f"Checking for genome {genome}")
+
         for record in records:
 
             if record.description.split(" ")[0] == genome:
@@ -63,7 +65,11 @@ for genome in genomes:
 
                 sourceFile_fasta.close()
 
+                print(f"Wrote fasta file for {genome}")
+
         os.system(f"prokka --addgenes --outdir {outdir}prueba/ --locustag {genome} --prefix {genome} --kingdom Viruses --cpus {cores} --norrna --notrna {outdir}{genome}.fas --force")
+
+        print(f"Annotated {genome}")
 
         os.system(f"mv {outdir}prueba/{genome}.gbk {outdir}{genome}.gbk")
 
