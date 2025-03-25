@@ -375,6 +375,8 @@ rule virus_genome_annotate:
 		outdir = "viral_genomes/",
 		vir_fasta = config["virus_fasta"],
 		cores = config["cores"]
+	conda:
+		"envs/prokka.yml"
 	shell:
 		"""
 
