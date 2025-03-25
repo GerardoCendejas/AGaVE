@@ -27,13 +27,12 @@ outdir <- args[2]
 # Function to plot the reference genome (as a red rectangle)
 
 plot_ref <- function(x){
-  g <- ggplot(data=x)+geom_rect(data=x, mapping=aes(xmin=0, xmax=V4, ymin=-0.15, ymax=0.15),
-                           color="black",fill="red")+
+  g <- ggplot(data=x)+geom_rect(data=x, mapping=aes(xmin=0, xmax=V4, ymin=-0.15, ymax=0.15),color="black",fill="red")+
     theme_minimal()+ggtitle(x$V1)+scale_x_continuous(position = "top")+
     theme(panel.grid.major = element_blank(),
           panel.grid.minor = element_blank(),
           panel.border = element_blank(),
-          axis.ticks = element_line(size = 1),
+          axis.ticks = element_line(linewidth= = 1),
           axis.ticks.length = unit(.25, "cm"),
           axis.text.y = element_blank(),
           axis.ticks.y = element_blank(),
@@ -52,7 +51,7 @@ plot_ref <- function(x){
 # Function to plot unmapped regions of contigs
 
 plot_not <- function(g,x1,x2,ypos){
-  g <- g+geom_segment(aes_string(x=x1,xend=x2,y=ypos,yend=ypos))
+  g <- g+geom_segment(aes(x=x1,xend=x2,y=ypos,yend=ypos))
   return(g)
 }
 
@@ -61,7 +60,7 @@ plot_not <- function(g,x1,x2,ypos){
 # Function to plot mapped regions of contigs
 
 plot_mapped <- function(g,x1,x2,ypos,fill,alpha){
-  g <- g+geom_rect(aes_string(xmin=x1,xmax=x2,ymin=ypos-0.15,ymax=ypos+0.15),
+  g <- g+geom_rect(aes(xmin=x1,xmax=x2,ymin=ypos-0.15,ymax=ypos+0.15),
                    color="black",fill=fill,alpha=alpha)
   return(g)
 }
@@ -190,7 +189,9 @@ plot_aln_annot <- function(df){
   
   for(i in 1:dim(df)[1]){
     g <- plot_contig(g,df[i,],i*(-0.6))
-    g <- plot_annot(g,df[i,],i*(-0.6)-0.25)
+    if(df[i,9] != ""){
+      g <- plot_annot(g,df[i,],i*(-0.6)-0.25)
+    }
   }
   
   return(g)
