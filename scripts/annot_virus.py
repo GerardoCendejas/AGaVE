@@ -55,7 +55,7 @@ for genome in genomes:
 
         for record in records:
 
-            if record.id == genome:
+            if record.description.split(" ")[0] == genome:
 
                 sourceFile_fasta = open(f'{outdir}{genome}.fas', 'w')
 
