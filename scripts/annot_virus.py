@@ -57,29 +57,31 @@ for genome in genomes:
 
         for record in records:
 
-            if record.description.split(" ")[0] == genome:
+            genome_id = record.description.split("|")[2]
 
-                sourceFile_fasta = open(f'{outdir}{genome}.fas', 'w')
+            if genome_id in genome:
+
+                sourceFile_fasta = open(f'{outdir}{genome_id}.fas', 'w')
 
                 print(f'> {record.id}\n{record.seq}',file=sourceFile_fasta)
 
                 sourceFile_fasta.close()
 
-                print(f"Wrote fasta file for {genome}")
+                print(f"Wrote fasta file for {genome_id}")
 
-        os.system(f"prokka --addgenes --outdir {outdir}prueba/ --locustag {genome} --prefix {genome} --kingdom Viruses --cpus {cores} --norrna --notrna {outdir}{genome}.fas --force")
+        os.system(f"prokka --addgenes --outdir {outdir}prueba/ --locustag {genome_id} --prefix {genome_id} --kingdom Viruses --cpus {cores} --norrna --notrna {outdir}{genome_id}.fas --force")
 
         print(f"Annotated {genome}")
 
-        os.system(f"mv {outdir}prueba/{genome}.gbk {outdir}{genome}.gbk")
+        os.system(f"mv {outdir}prueba/{genome_id}.gbk {outdir}{genome_id}.gbk")
 
         os.system(f"rm -rf {outdir}prueba/")
 
 
-        annot = list(SeqIO.parse(f"{outdir}{genome}.gbk", "genbank"))
+        annot = list(SeqIO.parse(f"{outdir}{genome_id}.gbk", "genbank"))
 
 
-        sourceFile = open(f'{outdir}{genome}.gff', 'w')
+        sourceFile = open(f'{outdir}{genome_id}.gff', 'w')
 
         for feature in annot.features:
 
@@ -96,7 +98,7 @@ for genome in genomes:
 
 
     sourceFile = open(output, 'w')
-    print(f"Checked for genome: {genome}")
+    print(f"Checked for genome: {genome_id}")
     sourceFile.close()
 
 
