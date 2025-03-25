@@ -4,3 +4,4 @@ channels:
  - bioconda
 dependencies:
  - prokka=1.14.6
+ - biopython
