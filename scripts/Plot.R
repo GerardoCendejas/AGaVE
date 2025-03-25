@@ -32,7 +32,7 @@ plot_ref <- function(x){
     theme(panel.grid.major = element_blank(),
           panel.grid.minor = element_blank(),
           panel.border = element_blank(),
-          axis.ticks = element_line(linewidth= = 1),
+          axis.ticks = element_line(linewidth = 1),
           axis.ticks.length = unit(.25, "cm"),
           axis.text.y = element_blank(),
           axis.ticks.y = element_blank(),
