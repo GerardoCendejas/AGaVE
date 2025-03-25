@@ -217,15 +217,15 @@ if(!"0"%in%lev){
 
     g_temp_annot <- plot_aln_annot(temp)
     
-    ggsave(paste(outdir,lev[i],"_mapped.jpg",sep=""),g_temp,width = 1200,height = 800,units = "px",dpi=200)
+    ggsave(paste(outdir,lev[i],"_mapped.jpg",sep=""),g_temp,width = 1200,height = 800,units = "px",dpi=200, create.dir = TRUE)
 
-    ggsave(paste(outdir,lev[i],"_mapped_annot.jpg",sep=""),g_temp_annot,width = 1200,height = 800,units = "px",dpi=200)
+    ggsave(paste(outdir,lev[i],"_mapped_annot.jpg",sep=""),g_temp_annot,width = 1200,height = 800,units = "px",dpi=200, create.dir = TRUE)
     
   }
 }else{
   g <- ggplot(data, aes(x=0,y=0))+theme_void()+
   geom_text(aes(x=0,y=0,label="No viral sequence found"),size=10)
 
-  ggsave(paste(outdir,"NO_VIRUS.jpg",sep=""),g,width = 1200,height = 800,units = "px",dpi=200)
+  ggsave(paste(outdir,"NO_VIRUS.jpg",sep=""),g,width = 1200,height = 800,units = "px",dpi=200, create.dir = TRUE)
 }
 
