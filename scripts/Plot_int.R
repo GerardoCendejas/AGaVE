@@ -54,7 +54,7 @@ g <- ggplot(int, aes(x = len,fill=Type)) +
   xlab("Contig length (bp)")+ylab("Density")+
   ggtitle("Length distribution of mapped contigs")
 
-ggsave(paste(outdir,"contig_length.jpg",sep=""),g,width = 1200,height = 800,units = "px",dpi=200, create.dir = TRUE)
+ggsave(paste(outdir,"contig_length.jpg",sep=""),g,width = 1200,height = 800,units = "px",dpi=200)
 
 
 
@@ -66,7 +66,7 @@ g_log <- ggplot(int, aes(x = log10(len), fill = Type)) +
   xlab("Contig length log10(bp)")+ylab("Density")+
   ggtitle("Length distribution of mapped contigs","Log 10 transformation")
 
-ggsave(paste(outdir,"contig_log_length.jpg",sep=""),g_log,width = 1200,height = 800,units = "px",dpi=200, create.dir = TRUE)
+ggsave(paste(outdir,"contig_log_length.jpg",sep=""),g_log,width = 1200,height = 800,units = "px",dpi=200)
 
 
 

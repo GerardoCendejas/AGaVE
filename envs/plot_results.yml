@@ -7,3 +7,4 @@ dependencies:
  - r-base
  - r-ggplot2
  - r-RIdeogram
+ - r-stringi
