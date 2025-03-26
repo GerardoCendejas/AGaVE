@@ -70,6 +70,7 @@ for genome in genomes:
         os.system(f"prokka --addgenes --outdir {outdir}prueba/ --locustag {genome} --prefix {genome} --kingdom Viruses --cpus {cores} --norrna --notrna {outdir}{genome}.fas --force")
 
         print(f"Annotated {genome}")
+        print(os.listdir(f"{outdir}prueba/"))
 
         os.system(f"mv {outdir}prueba/{genome}.gbk {outdir}{genome}.gbk")
 
