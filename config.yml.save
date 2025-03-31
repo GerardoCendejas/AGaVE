@@ -4,11 +4,10 @@ genome_dir : "/labs/csbig/gerardo/genomes/human/STAR"
 
 # Directory of the viral database in fasta format
 
-virus_fasta : "/labs/csbig/gerardo/genomes/virus/virus.fa"
-
+virus_fasta : "/labs/csbig/genomes/virus/virus.fa"
 # Directory of the viral database in mmi format (for minimap2)
 
-virus_db : "/labs/csbig/gerardo/genomes/virus/virus.mmi"
+virus_db : "/home/gerardo/Documentos/Gera/Taller/Proyecto/Bases/virus/virus.mmi"
 
 # Directory of the host genome in mmi format (for minimap2)
 
@@ -16,9 +15,9 @@ human_minimap : "/labs/csbig/gerardo/genomes/human/human_genome.mmi"
 
 # Number of cores to use
 
-cores : "32"
+cores : "8"
 
 # kmer sizes to be used in the rnaspades de novo assembly
 # Should be a string of the kmer sizes separated by commas
 
-kmers : "31,53,75,91,115"
+kmers : "31,53,75,91"
