@@ -9,4 +9,4 @@ results/
 viral_genomes/
 viralcount/
 .snakemake/
-*log.a
+*.log
