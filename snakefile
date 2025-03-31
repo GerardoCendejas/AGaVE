@@ -299,6 +299,8 @@ rule plot_virus:
 
 		printf  "\n###Generating result plots for contigs###\n\n"
 
+		mkdir results/plots/
+
 		mkdir results/plots/{wildcards.sample}/
 
 		Rscript --vanilla scripts/Plot.R {input}  results/plots/{wildcards.sample}/
