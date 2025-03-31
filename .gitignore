@@ -10,3 +10,4 @@ viral_genomes/
 viralcount/
 .snakemake/
 *.log
+Rplots.pdf
