@@ -90,9 +90,9 @@ for genome in genomes:
 
             if feature.type == "CDS":
 
-                try:
+                #try:
                     #gene = feature.qualifiers["gene"][0]
-                except:
+                #except:
                     #gene = feature.qualifiers["product"][0].split(",")[0]
 
                 #print(f'{record.id}\tprokka\tCDS\t{feature.location.start}\t{feature.location.end}\t.\t{feature.strand}\t.\tID={feature.qualifiers["locus_tag"]};Name={gene}',file=sourceFile)
