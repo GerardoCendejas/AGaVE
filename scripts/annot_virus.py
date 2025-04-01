@@ -79,21 +79,23 @@ for genome in genomes:
                 os.system(f"rm -rf {outdir}prueba/")
 
 
-                annot = SeqIO.parse(f"{outdir}{genome}.gbk", "genbank")
+                annot = list(SeqIO.parse(f"{outdir}{genome}.gbk", "genbank"))
 
 
                 sourceFile = open(f'{outdir}{genome}.gff', 'w')
 
-                for feature in annot.features:
+                for record in annot:    
 
-                    if feature.type == "CDS":
+                    for feature in record.features:
 
-                        try:
-                            gene = feature.qualifiers["gene"][0]
-                        except:
-                            gene = feature.qualifiers["product"][0].split(",")[0]
+                        if feature.type == "CDS":
 
-                        print(f'{record.id}\tprokka\tCDS\t{feature.location.start}\t{feature.location.end}\t.\t{feature.strand}\t.\tID={feature.qualifiers["locus_tag"]};Name={gene}',file=sourceFile)
+                            try:
+                                gene = feature.qualifiers["gene"][0]
+                            except:
+                                gene = feature.qualifiers["product"][0].split(",")[0]
+
+                            print(f'{record.id}\tprokka\tCDS\t{feature.location.start}\t{feature.location.end}\t.\t{feature.strand}\t.\tID={feature.qualifiers["locus_tag"]};Name={gene}',file=sourceFile)
 
                 sourceFile.close()
 
