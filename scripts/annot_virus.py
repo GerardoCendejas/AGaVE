@@ -37,6 +37,8 @@ file = pd.read_csv(vir_found)
 
 genomes = file["Genome"]
 
+print(f"Found genomes {genomes}")
+
 # Get files present
 
 files = os.listdir(outdir)
@@ -59,46 +61,48 @@ for genome in genomes:
 
             if record.id in genome:
 
-                sourceFile_fasta = open(f'{outdir}{genome}.fas', 'w')
+                print(record.id)
 
-                print(f'> {record.id}\n{record.seq}',file=sourceFile_fasta)
+                #sourceFile_fasta = open(f'{outdir}{genome}.fas', 'w')
 
-                sourceFile_fasta.close()
+                #print(f'> {record.id}\n{record.seq}',file=sourceFile_fasta)
 
-                print(f"Wrote fasta file for {genome}")
+                #sourceFile_fasta.close()
 
-        os.system(f"prokka --addgenes --outdir {outdir}prueba/ --locustag {genome} --prefix {genome} --kingdom Viruses --cpus {cores} --norrna --notrna {outdir}{genome}.fas --force")
+                #print(f"Wrote fasta file for {genome}")
 
-        print(f"Annotated {genome}")
-        print(os.listdir(f"{outdir}prueba/"))
+        #os.system(f"prokka --addgenes --outdir {outdir}prueba/ --locustag {genome} --prefix {genome} --kingdom Viruses --cpus {cores} --norrna --notrna {outdir}{genome}.fas --force")
 
-        os.system(f"mv {outdir}prueba/{genome}.gbk {outdir}{genome}.gbk")
+        #print(f"Annotated {genome}")
+        #print(os.listdir(f"{outdir}prueba/"))
 
-        os.system(f"rm -rf {outdir}prueba/")
+        #os.system(f"mv {outdir}prueba/{genome}.gbk {outdir}{genome}.gbk")
+
+        #os.system(f"rm -rf {outdir}prueba/")
 
 
-        annot = list(SeqIO.parse(f"{outdir}{genome}.gbk", "genbank"))
+        #annot = list(SeqIO.parse(f"{outdir}{genome}.gbk", "genbank"))
 
 
-        sourceFile = open(f'{outdir}{genome}.gff', 'w')
+        #sourceFile = open(f'{outdir}{genome}.gff', 'w')
 
         for feature in annot.features:
 
             if feature.type == "CDS":
 
                 try:
-                    gene = feature.qualifiers["gene"][0]
+                    #gene = feature.qualifiers["gene"][0]
                 except:
-                    gene = feature.qualifiers["product"][0].split(",")[0]
+                    #gene = feature.qualifiers["product"][0].split(",")[0]
 
-                print(f'{record.id}\tprokka\tCDS\t{feature.location.start}\t{feature.location.end}\t.\t{feature.strand}\t.\tID={feature.qualifiers["locus_tag"]};Name={gene}',file=sourceFile)
+                #print(f'{record.id}\tprokka\tCDS\t{feature.location.start}\t{feature.location.end}\t.\t{feature.strand}\t.\tID={feature.qualifiers["locus_tag"]};Name={gene}',file=sourceFile)
 
-        sourceFile.close()
+        #sourceFile.close()
 
 
-    sourceFile = open(output, 'w')
-    print(f"Checked for genome: {genome}")
-    sourceFile.close()
+    #sourceFile = open(output, 'w')
+    #print(f"Checked for genome: {genome}")
+    #sourceFile.close()
 
 
 
