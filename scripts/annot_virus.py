@@ -98,9 +98,9 @@ for genome in genomes:
                 sourceFile.close()
 
 
-            sourceFile = open(output, 'w')
-            print(f"Checked for genome: {genome}")
-            sourceFile.close()
+                sourceFile = open(output, 'w')
+                print(f"Checked for genome: {genome}",file=sourceFile)
+                sourceFile.close()
 
 
 
