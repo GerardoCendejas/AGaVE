@@ -59,17 +59,17 @@ for genome in genomes:
 
         for record in records:
 
-            if record.id in genome:
+            if record.id == genome:
 
                 print(record.id)
 
-                #sourceFile_fasta = open(f'{outdir}{genome}.fas', 'w')
+                sourceFile_fasta = open(f'{outdir}{genome}.fas', 'w')
 
-                #print(f'> {record.id}\n{record.seq}',file=sourceFile_fasta)
+                print(f'> {record.id}\n{record.seq}',file=sourceFile_fasta)
 
-                #sourceFile_fasta.close()
+                sourceFile_fasta.close()
 
-                #print(f"Wrote fasta file for {genome}")
+                print(f"Wrote fasta file for {genome}")
 
         #os.system(f"prokka --addgenes --outdir {outdir}prueba/ --locustag {genome} --prefix {genome} --kingdom Viruses --cpus {cores} --norrna --notrna {outdir}{genome}.fas --force")
 
