@@ -62,6 +62,8 @@ if (os.path.getsize(f"viralmap/{sample}_mapped2virus.fasta") != 0):
                 "ReadMappedLen":read_mapped_len,"CopyNumber":copy_number}
     data = pd.DataFrame(data,index=None)
 
+    print(file)
+    print(data)
 
     data = pd.concat(file, data, on='Genome')
 
