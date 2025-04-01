@@ -72,41 +72,35 @@ for genome in genomes:
 
                 print(f"Annotated {genome}")
 
-                print(os.listdir(f"{outdir}prueba/"))
+                os.system(f"mv {outdir}prueba/genome.gbk \"{outdir}{genome}.gbk\"")
 
-                os.system(f"mv {outdir}prueba/genome.gbk {outdir}{genome}.gbk")
+                os.system(f"mv {outdir}genome.fas \"{outdir}{genome}.fas\"")
 
-                print(f"moved {genome} gbk")
-
-                os.system(f"mv {outdir}genome.fas {outdir}{genome}.fas")
-
-                print(f"moved {genome} fas")
-
-        #os.system(f"rm -rf {outdir}prueba/")
+                os.system(f"rm -rf {outdir}prueba/")
 
 
-        #annot = list(SeqIO.parse(f"{outdir}{genome}.gbk", "genbank"))
+                annot = list(SeqIO.parse(f"{outdir}{genome}.gbk", "genbank"))
 
 
-        #sourceFile = open(f'{outdir}{genome}.gff', 'w')
+                sourceFile = open(f'{outdir}{genome}.gff', 'w')
 
-        #for feature in annot.features:
+                for feature in annot.features:
 
-            #if feature.type == "CDS":
+                    if feature.type == "CDS":
 
-                #try:
-                    #gene = feature.qualifiers["gene"][0]
-                #except:
-                    #gene = feature.qualifiers["product"][0].split(",")[0]
+                        try:
+                            gene = feature.qualifiers["gene"][0]
+                        except:
+                            gene = feature.qualifiers["product"][0].split(",")[0]
 
-                #print(f'{record.id}\tprokka\tCDS\t{feature.location.start}\t{feature.location.end}\t.\t{feature.strand}\t.\tID={feature.qualifiers["locus_tag"]};Name={gene}',file=sourceFile)
+                        print(f'{record.id}\tprokka\tCDS\t{feature.location.start}\t{feature.location.end}\t.\t{feature.strand}\t.\tID={feature.qualifiers["locus_tag"]};Name={gene}',file=sourceFile)
 
-        #sourceFile.close()
+                sourceFile.close()
 
 
-    #sourceFile = open(output, 'w')
-    #print(f"Checked for genome: {genome}")
-    #sourceFile.close()
+            sourceFile = open(output, 'w')
+            print(f"Checked for genome: {genome}")
+            sourceFile.close()
 
 
 
