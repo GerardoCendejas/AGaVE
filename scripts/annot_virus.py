@@ -68,7 +68,7 @@ for genome in genomes:
 
                 print(f"Wrote fasta file for {genome}")
 
-        os.system(f"prokka --addgenes --outdir {outdir}prueba/ --locustag {genome} --prefix {genome} --kingdom Viruses --cpus {cores} --norrna --notrna {outdir}{genome}.fas --force")
+        os.system(f"prokka --addgenes --outdir {outdir}prueba/ --locustag {genome} --prefix {genome} --kingdom Viruses --cpus {cores} --norrna --notrna \"{outdir}{genome}.fas\" --force")
 
         print(f"Annotated {genome}")
         #print(os.listdir(f"{outdir}prueba/"))
