@@ -79,7 +79,7 @@ for genome in genomes:
                 os.system(f"rm -rf {outdir}prueba/")
 
 
-                annot = list(SeqIO.parse(f"{outdir}{genome}.gbk", "genbank"))
+                annot = SeqIO.parse(f"{outdir}{genome}.gbk", "genbank")
 
 
                 sourceFile = open(f'{outdir}{genome}.gff', 'w')
