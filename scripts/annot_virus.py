@@ -23,11 +23,11 @@ vir_fasta = sys.argv[2]
 
 sample = sys.argv[3]
 
-cores = sys.argv[4]
+cores = sys.argv[5]
 
 # output_file
 
-output = sys.argv[5]
+output = sys.argv[6]
 
 
 
