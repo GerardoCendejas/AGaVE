@@ -86,9 +86,9 @@ for genome in genomes:
 
         #sourceFile = open(f'{outdir}{genome}.gff', 'w')
 
-        for feature in annot.features:
+        #for feature in annot.features:
 
-            if feature.type == "CDS":
+            #if feature.type == "CDS":
 
                 #try:
                     #gene = feature.qualifiers["gene"][0]

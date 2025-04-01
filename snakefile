@@ -386,7 +386,7 @@ rule virus_genome_annotate:
 	shell:
 		"""
 
-		printf  "\n###Generating gbk files for ###\n\n"
+		printf  "\n###Generating gbk files for {wildcards.sample}###\n\n"
 
 		python scripts/{params.script} {input} {params.vir_fasta} {wildcards.sample} {params.outdir} {params.cores} {output}
 
