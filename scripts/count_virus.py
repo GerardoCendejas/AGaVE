@@ -38,7 +38,7 @@ samfile = pysam.AlignmentFile(aln_file)
 
 # Results files, adding count of reads mapped to viral genome...
 
-if (os.path.getsize(f"viralmap/{sys.argv[2]}_mapped2virus.fasta") != 0):
+if (os.path.getsize(f"viralmap/{sample}_mapped2virus.fasta") != 0):
 
     genomes = []
     read_count=[]
