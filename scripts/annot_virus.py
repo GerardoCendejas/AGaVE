@@ -60,7 +60,7 @@ for genome in genomes:
         for record in records:
 
             if record.id == genome:
-                sourceFile_fasta = open(f'{genome}.fas', 'w')
+                sourceFile_fasta = open(f'{outdir}{genome}.fas', 'w')
 
                 print(f'> {record.id}\n{record.seq}',file=sourceFile_fasta)
 
@@ -68,10 +68,10 @@ for genome in genomes:
 
                 print(f"Wrote fasta file for {genome}")
 
-        os.system(f"prokka --addgenes --outdir {outdir}prueba/ --locustag {genome} --prefix {genome} --kingdom Viruses --cpus {cores} --norrna --notrna --centre X --compliant \"{outdir}{genome}.fas\" --force")
+        os.system(f"prokka --addgenes --outdir {outdir}prueba/ --locustag {genome} --prefix {genome} --kingdom Viruses --cpus {cores} --norrna --notrna \"{outdir}{genome}.fas\" --force")
 
         print(f"Annotated {genome}")
-
+        
         #print(os.listdir(f"{outdir}prueba/"))
 
         #os.system(f"mv {outdir}prueba/{genome}.gbk {outdir}{genome}.gbk")
