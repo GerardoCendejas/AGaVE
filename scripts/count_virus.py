@@ -63,7 +63,7 @@ if (os.path.getsize(f"viralmap/{sample}_mapped2virus.fasta") != 0):
     data = pd.DataFrame(data,index=None)
 
 
-    data = pd.merge(file, data, on='Genome')
+    data = pd.concat(file, data, on='Genome')
 
     data = data.sort_values(by=['GenomeCoverageIdx'],ascending=False)
 
