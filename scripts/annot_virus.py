@@ -105,6 +105,10 @@ for genome in genomes:
                 sourceFile.close()
 
 
+sourceFile = open(output, 'w')
+print(f"Checked all genomesfor {sample}",file=sourceFile)
+sourceFile.close()
+
 
 
 
