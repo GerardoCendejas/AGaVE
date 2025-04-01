@@ -77,7 +77,7 @@ if (os.path.getsize(f"viralmap/{sample}_mapped2virus.fasta") != 0):
 
 gff_file = []
 
-if (os.path.getsize(f"viralmap/{sys.argv[2]}_mapped2virus.fasta") == 0):
+if (os.path.getsize(f"viralmap/{sample}_mapped2virus.fasta") == 0):
 
     for genome in found_genomes:
 
