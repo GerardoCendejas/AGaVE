@@ -115,19 +115,22 @@ if (os.path.getsize(f"viralmap/{sample}_mapped2virus.fasta") != 0):
 
 # Merging the gff files of the found genomes
 
-gff_file = pd.DataFrame()
-
 if (os.path.getsize(f"viralmap/{sample}_mapped2virus.fasta") != 0):
+
+    merged_gff = []  # List to store dataframes
 
     for genome in found_genomes:
 
-        gff_temp = pd.read_csv(f"viral_genomes/{genome}.gff",sep="\t")
+        gff_temp = pd.read_csv(f"viral_genomes/{genome}.gff", sep="\t", header=None)
 
-        for i in range(gff_temp[1]):
+        for i in range(len(gff_temp)):
+            merged_gff.append(gff_temp.iloc[i, :])  # Append row to list
 
-            print(gff_temp[i,:])
+    if merged_gff:
+        gff_file = pd.DataFrame(merged_gff)  # Create DataFrame from list
+else:
 
-            gff_file = pd.concat([gff_file, gff_temp[i,:]], axis=0, ignore_index=True)
+    gff_file = pd.DataFrame()
 
 gff_file.to_csv(f"{outdir}{sample}.gff",index=False,sep="\t")
 
