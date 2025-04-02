@@ -109,7 +109,7 @@ if (os.path.getsize(f"viralmap/{sample}_mapped2virus.fasta") != 0):
 
         data.to_csv(vir_found,index=False)
     except:
-        
+        print("")
 
 
 
