@@ -396,7 +396,7 @@ rule virus_genome_annotate:
 
 rule virus_count:
 	input:
-		c1 = "viralmap/{sample}_mapped2virus_sorted.bam",
+		c1 = "viralcount/{sample}_mapped2virus_sorted.bam",
 		c2 = "results/{sample}_ref_genome_maps.csv",
 		c3 = "viral_genomes/{sample}_annotated_virus.log"
 	output:
