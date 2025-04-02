@@ -74,8 +74,6 @@ def get_mapped_len(x):
 
 if (os.path.getsize(f"viralmap/{sample}_mapped2virus.fasta") != 0):
 
-    print("It's checking for counts")
-
     genomes = []
     read_count=[]
     genome_len=[]
@@ -84,8 +82,6 @@ if (os.path.getsize(f"viralmap/{sample}_mapped2virus.fasta") != 0):
 
     for genome in samfile.get_index_statistics():
         if genome[0] in found_genomes.values:
-
-            print(f"cheking counts for {genome[0]}")
 
             genomes.append(genome[0])
             read_count.append(genome[1])
