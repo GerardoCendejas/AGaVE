@@ -48,10 +48,10 @@ if (os.path.getsize(f"viralmap/{sample}_mapped2virus.fasta") != 0):
     read_mapped_len = []
     copy_number = []
 
-    print("HPV16REF|lcl|Human" in found_genomes)
+    print("HPV16REF|lcl|Human" in found_genomes.values)
 
     for genome in samfile.get_index_statistics():
-        if genome[0] in found_genomes:
+        if genome[0] in found_genomes.values:
 
             print(f"cheking counts for {genome[0]}")
 
