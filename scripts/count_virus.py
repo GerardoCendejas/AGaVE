@@ -132,7 +132,7 @@ else:
 
     gff_file = pd.DataFrame()
 
-gff_file.to_csv(f"{outdir}{sample}.gff",index=False,sep="\t")
+gff_file.to_csv(f"{outdir}{sample}.gff",index=False,sep="\t",header=False)
 
 
 
