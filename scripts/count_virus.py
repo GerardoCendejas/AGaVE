@@ -36,6 +36,16 @@ found_genomes = file["Genome"]
 
 samfile = pysam.AlignmentFile(aln_file)
 
+# Dictionaries
+
+strand = {0:1,16:-1,256:1,272:-1,2048:1,2064:-1}
+
+aln = {0:"primary",16:"primary",256:"not primary",272:"not primary",2048:"supplementary",2064:"supplementary"}
+
+mapped = {"M":1,"D":0,"N":0,"I":2,"S":0,"H":0}
+
+keys = list(mapped.keys())
+
 # Needed function 
 
 def get_mapped_len(x):
