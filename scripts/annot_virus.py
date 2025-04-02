@@ -93,7 +93,7 @@ for genome in genomes:
                             except:
                                 gene = feature.qualifiers["product"][0].split(",")[0]
 
-                            print(f'{record.id}\tprokka\tCDS\t{feature.location.start}\t{feature.location.end}\t.\t{feature.strand}\t.\tID={feature.qualifiers["locus_tag"]};Name={gene}',file=sourceFile)
+                            print(f'{record.id}\tprokka\tCDS\t{feature.location.start}\t{feature.location.end}\t.\t{feature.strand}\t.\tID={feature.qualifiers["locus_tag"]};Name={gene};locus={feature.qualifiers["locus_tag"]};',file=sourceFile)
 
                 sourceFile.close()
 
