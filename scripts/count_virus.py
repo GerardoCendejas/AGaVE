@@ -123,7 +123,9 @@ if (os.path.getsize(f"viralmap/{sample}_mapped2virus.fasta") != 0):
 
         gff_temp = pd.read_csv(f"viral_genomes/{genome}.gff",sep="\t")
 
-        gff_file = pd.concat([gff_file, gff_temp])
+        print("gff_temp")
+
+        gff_file = pd.concat([gff_file, gff_temp], axis=0, ignore_index=True)
 
 gff_file.to_csv(f"{outdir}{sample}.gff",index=False,sep="\t")
 
