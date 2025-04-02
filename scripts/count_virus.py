@@ -101,11 +101,13 @@ if (os.path.getsize(f"viralmap/{sample}_mapped2virus.fasta") != 0):
                 "ReadMappedLen":read_mapped_len,"CopyNumber":copy_number}
     data = pd.DataFrame(data,index=None)
 
-    print(data)
-
     data = pd.merge(file, data, on='Genome')
 
     data = data.sort_values(by=['GenomeCoverageIdx'],ascending=False)
+
+    print(data)
+
+    print(vir_found)
 
     data.to_csv(vir_found,index=False)
 
@@ -125,7 +127,7 @@ if (os.path.getsize(f"viralmap/{sample}_mapped2virus.fasta") == 0):
 
         gff_file = pd.concat([gff_file, gff_temp])
 
-data.to_csv(f"{outdir}{sample}.gff",index=False,sep="\t")
+gff_file.to_csv(f"{outdir}{sample}.gff",index=False,sep="\t")
 
 
 

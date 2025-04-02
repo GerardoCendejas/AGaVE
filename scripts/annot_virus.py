@@ -37,8 +37,6 @@ file = pd.read_csv(vir_found)
 
 genomes = file["Genome"]
 
-print(f"Found genomes {genomes}")
-
 # Get files present
 
 files = os.listdir(outdir)
