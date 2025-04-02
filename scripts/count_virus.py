@@ -36,6 +36,30 @@ found_genomes = file["Genome"]
 
 samfile = pysam.AlignmentFile(aln_file)
 
+# Needed function 
+
+def get_mapped_len(x):
+    num = re.split(r'\D+',x)
+    tmp = re.split(r'\d',x)
+    num.remove("")
+    
+    aligned = []
+    
+    for i in tmp:
+        if i in keys:
+            aligned.append(i)
+            
+    mapped_len = 0
+    
+    for i in range(0,len(num)):
+        
+        if mapped[aligned[i]] == 1:
+            mapped_len+=int(num[i])       
+        else:
+            next
+            
+    return(mapped_len)
+
 # Results files, adding count of reads mapped to viral genome...
 
 if (os.path.getsize(f"viralmap/{sample}_mapped2virus.fasta") != 0):
@@ -47,8 +71,6 @@ if (os.path.getsize(f"viralmap/{sample}_mapped2virus.fasta") != 0):
     genome_len=[]
     read_mapped_len = []
     copy_number = []
-
-    print("HPV16REF|lcl|Human" in found_genomes.values)
 
     for genome in samfile.get_index_statistics():
         if genome[0] in found_genomes.values:
