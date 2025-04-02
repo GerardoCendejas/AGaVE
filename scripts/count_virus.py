@@ -101,10 +101,16 @@ if (os.path.getsize(f"viralmap/{sample}_mapped2virus.fasta") != 0):
                 "ReadMappedLen":read_mapped_len,"CopyNumber":copy_number}
     data = pd.DataFrame(data,index=None)
 
+    print("new")
+    print(data)
+    print("old")
+    print(file)
+
     data = pd.merge(file, data, on='Genome')
 
     data = data.sort_values(by=['GenomeCoverageIdx'],ascending=False)
 
+    print("new")
     print(data)
 
     print(vir_found)
