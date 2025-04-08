@@ -408,7 +408,7 @@ rule virus_count:
 		outdir = "viralcount/",
 		cores = config["cores"]
 	conda:
-		"envs/results.yml"
+		"envs/telescope.yml"
 	shell:
 		"""
 
