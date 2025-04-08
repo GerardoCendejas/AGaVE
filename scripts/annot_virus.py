@@ -96,7 +96,14 @@ for genome in genomes:
                             ID_tag = record.id.replace("|", "_")
                             locus_tag = str(feature.qualifiers["locus_tag"][0]).replace("|", "_")
 
-                            print(f'{ID_tag}\tprokka\tCDS\t{feature.location.start}\t{feature.location.end}\t.\t{feature.strand}\t.\tID \"{locus_tag}\";Name \"{gene}\";locus \"{locus_tag}\";',file=sourceFile)
+                            attributes = (
+                                                f'gene_id "{locus_tag}"; '
+                                                f'transcript_id "{locus_tag}"; '
+                                                f'locus "{locus_tag}"; '
+                                                f'product "{gene}";'
+                                            )
+
+                            print(f'{ID_tag}\tprokka\tCDS\t{feature.location.start}\t{feature.location.end}\t.\t{feature.strand}\t.\t{attributes}',file=sourceFile)
 
                 sourceFile.close()
 
