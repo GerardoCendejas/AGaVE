@@ -416,9 +416,11 @@ rule virus_count:
 
 		python scripts/{params.script} {input.c1} {input.c2} {wildcards.sample} {params.outdir}
 
-		telescope assign {input.c1} {params.outdir}{wildcards.sample}.gff --outdir {params.outdir} --prefix {wildcards.sample}
+		telescope assign {input.c1} {params.outdir}{wildcards.sample}.gff --outdir {params.outdir} 
 
-		cp {params.outdir}{wildcards.sample}_counts.tsv {output.vc1}
+		cp {params.outdir}telescope-TE_counts.tsv {output.vc1}
+
+		rm {params.outdir}telescope*
 
 		echo "Workflow runned properly for viral count of reads in {wildcards.sample}" > {output.vc2}
 
