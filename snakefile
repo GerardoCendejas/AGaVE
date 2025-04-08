@@ -398,7 +398,8 @@ rule virus_count:
 	input:
 		c1 = "viralcount/{sample}_mapped2virus_sorted.bam",
 		c2 = "results/{sample}_ref_genome_maps.csv",
-		c3 = "viral_genomes/{sample}_annotated_virus.log"
+		c3 = "viral_genomes/{sample}_annotated_virus.log",
+		c4 = "viralmap/{sample}_mapped2virus_sorted.bam"
 	output:
 		vc1 = "results/{sample}_virus_count.tab",
 		vc2 = "{sample}_vc.log"
