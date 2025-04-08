@@ -1,0 +1,9 @@
+name: telescope_env
+channels:
+ - conda-forge
+ - bioconda
+dependencies:
+ - telescope
+ - numpy==1.19.5
+ - pandas=2.0.1
+ - pysam=0.21.0
