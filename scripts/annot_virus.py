@@ -102,7 +102,7 @@ for genome in genomes:
 
                             strand = "+" if feature.strand == 1 else "-" if feature.strand == -1 else "."
 
-                            line = f'{ID_tag}\tprokka\texon\t{feature.location.start+1}\t{feature.location.end}\t.\t{strand}\t.\t{attributes.strip('"')}\n'
+                            line = f'{ID_tag}\tprokka\texon\t{feature.location.start+1}\t{feature.location.end}\t.\t{strand}\t.\t{str(attributes).strip('"')}\n'
                             sourceFile.write(line)
 
                 sourceFile.close()
