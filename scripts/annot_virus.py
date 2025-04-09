@@ -93,7 +93,7 @@ for genome in genomes:
                             except:
                                 gene = feature.qualifiers["product"][0].split(",")[0]
 
-                            ID_tag = record.id
+                            ID_tag = str(feature.qualifiers["locus_tag"][0]).split("_")[0]
                             locus_tag = str(feature.qualifiers["locus_tag"][0])
 
                             attributes = (
@@ -108,7 +108,7 @@ for genome in genomes:
                             elif feature.strand == -1:
                                 strand = "-"
 
-                            print(f'{ID_tag}\tprokka\tCDS\t{feature.location.start}\t{feature.location.end}\t.\t{strand}\t.\t{attributes}',file=sourceFile)
+                            print(f'{ID_tag}\tprokka\texon\t{feature.location.start}\t{feature.location.end}\t.\t{strand}\t.\t{attributes}',file=sourceFile)
 
                 sourceFile.close()
 
