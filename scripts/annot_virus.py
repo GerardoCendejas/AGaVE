@@ -98,11 +98,9 @@ for genome in genomes:
 
                             attributes = f'gene_id \"{locus_tag}\"; transcript_id \"{locus_tag}\"; locus \"{locus_tag}\"; product \"{gene}\";'
 
-                            print(attributes)
-
                             strand = "+" if feature.strand == 1 else "-" if feature.strand == -1 else "."
 
-                            line = f'{ID_tag}\tprokka\texon\t{feature.location.start+1}\t{feature.location.end}\t.\t{strand}\t.\t{str(attributes).strip('"')}\n'
+                            line = f'{ID_tag}\tprokka\texon\t{feature.location.start+1}\t{feature.location.end}\t.\t{strand}\t.\t{attributes}\n'
                             sourceFile.write(line)
 
                 sourceFile.close()
