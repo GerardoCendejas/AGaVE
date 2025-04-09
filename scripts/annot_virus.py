@@ -93,7 +93,7 @@ for genome in genomes:
                             except:
                                 gene = feature.qualifiers["product"][0].split(",")[0]
 
-                            ID_tag = str(feature.qualifiers["locus_tag"][0]).split("_")[0]
+                            ID_tag = str(feature.qualifiers["locus_tag"][0]).split("_")[0:-1]
                             locus_tag = str(feature.qualifiers["locus_tag"][0])
 
                             attributes = (
