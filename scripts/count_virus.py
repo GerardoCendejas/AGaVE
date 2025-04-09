@@ -103,7 +103,7 @@ if (os.path.getsize(f"viralmap/{sample}_mapped2virus.fasta") != 0):
 
         data = data.sort_values(by=['GenomeCoverageIdx'],ascending=False)
 
-        data.to_csv(vir_found,index=False)
+        data.to_csv(f'results/{sample}_ref_genome_maps_2.csv',index=False)
     except:
         print("")
 
