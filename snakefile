@@ -405,6 +405,7 @@ rule virus_count:
 		vc2 = "{sample}_vc.log"
 	params:
 		script = "count_virus.py",
+		script_2 = "get_counts.py",
 		outdir = "viralcount/",
 		cores = config["cores"]
 	conda:
@@ -418,7 +419,7 @@ rule virus_count:
 
 		telescope assign {input.c1} {params.outdir}{wildcards.sample}.gff --outdir {params.outdir} 
 
-		awk -F'\\t' 'NR>2 {{gsub(/"/, "", $1); print $1 "\\t" $3}}' {params.outdir}telescope-telescope_report.tsv > counts.tsv
+		python scripts/{params.script_2}
 
 		mv {params.outdir}counts.tsv {output.vc1}
 
