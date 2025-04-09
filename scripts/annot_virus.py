@@ -97,11 +97,11 @@ for genome in genomes:
                             locus_tag = str(feature.qualifiers["locus_tag"][0])
 
                             attributes = (
-                                                f'gene_id \'{locus_tag}\'; '
-                                                f'transcript_id \'{locus_tag}\'; '
-                                                f'locus \'{locus_tag}\'; '
-                                                f'product \'{gene}\';'
-                                            )
+                                f'gene_id "{locus_tag}"; '
+                                f'transcript_id "{locus_tag}"; '
+                                f'locus "{locus_tag}"; '
+                                f'product "{gene}";'
+                            )
 
                             if feature.strand == 1:
                                 strand = "+"
