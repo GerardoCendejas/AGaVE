@@ -418,7 +418,7 @@ rule virus_count:
 
 		telescope assign {input.c1} {params.outdir}{wildcards.sample}.gff --outdir {params.outdir} 
 
-		awk -F'\\t' 'NR>2 {{gsub(/\"/, \"\", $1); print $1 \"\\t\" $3}}'  {params.outdir}telescope-telescope_report.tsv > counts.tsv
+		awk -F'\\t' 'NR>2 {{gsub(/\\\"/, \"\", $1); print $1 \"\\t\" $3}}' {params.outdir}telescope-telescope_report.tsv > counts.tsv
 
 		mv {params.outdir}counts.tsv {output.vc1}
 
