@@ -425,6 +425,8 @@ rule virus_count:
 
 		rm {params.outdir}telescope*
 
+		rm -f Rplots.pdf
+
 		echo "Workflow runned properly for viral count of reads in {wildcards.sample}" > {output.vc2}
 
 		"""
