@@ -401,7 +401,7 @@ rule virus_count:
 		c3 = "viral_genomes/{sample}_annotated_virus.log",
 		c4 = "viralmap/{sample}_mapped2virus_sorted.bam"
 	output:
-		vc1 = "results/{sample}_virus_count.tab",
+		vc1 = "results/{sample}_virus_count.tsv",
 		vc2 = "{sample}_vc.log"
 	params:
 		script = "count_virus.py",
@@ -418,7 +418,9 @@ rule virus_count:
 
 		telescope assign {input.c1} {params.outdir}{wildcards.sample}.gff --outdir {params.outdir} 
 
-		cp {params.outdir}telescope-TE_counts.tsv {output.vc1}
+		telescope count --features {params.outdir}{wildcards.sample}.gff --assignments {params.outdir}telescope-telescope_report.tsv --out {params.outdir}counts.tsv
+
+		mv {params.outdir}counts.tsv {output.vc1}
 
 		rm {params.outdir}telescope*
 
