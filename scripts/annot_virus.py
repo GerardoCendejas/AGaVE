@@ -96,11 +96,13 @@ for genome in genomes:
                             ID_tag = "_".join(str(feature.qualifiers["locus_tag"][0]).split("_")[0:-1]).strip('"')
                             locus_tag = str(feature.qualifiers["locus_tag"][0]).strip('"')
 
-                            attributes = f'gene_id {locus_tag}; transcript_id {locus_tag}; locus {locus_tag}; product {gene};'
+                            attributes = f'gene_id \"{locus_tag}\"; transcript_id \"{locus_tag}\"; locus \"{locus_tag}\"; product \"{gene}\";'
+
+                            print(attributes)
 
                             strand = "+" if feature.strand == 1 else "-" if feature.strand == -1 else "."
 
-                            line = f'{ID_tag}\tprokka\texon\t{feature.location.start+1}\t{feature.location.end}\t.\t{strand}\t.\t{attributes}\n'
+                            line = f'{ID_tag}\tprokka\texon\t{feature.location.start+1}\t{feature.location.end}\t.\t{strand}\t.\t{attributes.strip('"')}\n'
                             sourceFile.write(line)
 
                 sourceFile.close()
