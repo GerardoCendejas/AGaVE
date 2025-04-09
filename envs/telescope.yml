@@ -3,7 +3,7 @@ channels:
  - conda-forge
  - bioconda
 dependencies:
- - telescope=1.0.3-5
+ - telescope=1.0.3
  - numpy==1.19.5
  - pandas=1.2.5
  - pysam<= 0.16.0.1
