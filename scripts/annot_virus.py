@@ -103,7 +103,12 @@ for genome in genomes:
                                                 f'product \'{gene}\';'
                                             )
 
-                            print(f'{ID_tag}\tprokka\tCDS\t{feature.location.start}\t{feature.location.end}\t.\t{feature.strand}\t.\t{attributes}',file=sourceFile)
+                            if feature.strand == 1:
+                                strand = "+"
+                            elif feature.strand == -1:
+                                strand = "-"
+
+                            print(f'{ID_tag}\tprokka\tCDS\t{feature.location.start}\t{feature.location.end}\t.\t{strand}\t.\t{attributes}',file=sourceFile)
 
                 sourceFile.close()
 
