@@ -51,7 +51,8 @@ rule host_mapping:
 		c2 = "clean/{sample}_2P.fastq"
 	output:
 		u1 = "unmapped/{sample}_1.fastq",
-		u2 = "unmapped/{sample}_2.fastq"
+		u2 = "unmapped/{sample}_2.fastq",
+		u3 = "unmapped/{sample}_mapped.bam"
 	params:
 		genome_dir = config["genome_dir"],
 		cores = config["cores"]
