@@ -71,6 +71,10 @@ rule host_mapping:
 		samtools view -b -f 4 unmapped/{wildcards.sample}_mapped.bam > unmapped/{wildcards.sample}_unmapped.bam
 
 		bedtools bamtofastq -i unmapped/{wildcards.sample}_unmapped.bam -fq {output.u1} -fq2 {output.u2}
+
+		rm unmapped/{wildcards.sample}_mappedLog.* unmapped/{wildcards.sample}_mappedSJ.out.tab
+
+		cp unmapped/{wildcards.sample}_mappedReadsPerGene.out.tab results/{wildcards.sample}_gene_count.tsv
 		
 		"""
 
