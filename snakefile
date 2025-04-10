@@ -296,7 +296,7 @@ rule plot_virus:
 	input:
 		"results/{sample}_aln.csv"
 	output:
-		"{sample}_find.log"
+		"results/{sample}_find.log"
 	conda:
 		"envs/plot_results.yml"
 	shell:
@@ -324,7 +324,7 @@ rule plot_int:
 	input:
 		"results/{sample}_int_id.csv"
 	output:
-		"{sample}_int.log"
+		"results/{sample}_int.log"
 	conda:
 		"envs/plot_results.yml"
 	shell:
@@ -407,7 +407,7 @@ rule virus_count:
 		c4 = "viralmap/{sample}_mapped2virus_sorted.bam",
 	output:
 		vc1 = "results/{sample}_virus_count.tsv",
-		vc2 = "{sample}_vc.log"
+		vc2 = "results/{sample}_vc.log"
 	params:
 		script = "count_virus.py",
 		script_2 = "get_counts.py",
