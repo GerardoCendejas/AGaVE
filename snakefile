@@ -308,7 +308,7 @@ rule plot_virus:
 
 		Rscript --vanilla scripts/Plot.R {input}  results/plots/{wildcards.sample}/
 
-		rm Rplots.pdf
+		rm -f Rplots.pdf
 
 		echo "Workflow runned properly for {wildcards.sample}" > {output}
 
