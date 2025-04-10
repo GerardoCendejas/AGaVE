@@ -74,6 +74,8 @@ rule host_mapping:
 		bedtools bamtofastq -i unmapped/{wildcards.sample}_unmapped.bam -fq {output.u1} -fq2 {output.u2}
 
 		rm unmapped/{wildcards.sample}_mappedLog.* unmapped/{wildcards.sample}_mappedSJ.out.tab
+
+		cp unmapped/{wildcards.sample}_mappedReadsPerGene.out.tab results/{wildcards.sample}_gene_count.tsv
 		
 		"""
 
@@ -403,11 +405,9 @@ rule virus_count:
 		c2 = "results/{sample}_ref_genome_maps.csv",
 		c3 = "viral_genomes/{sample}_annotated_virus.log",
 		c4 = "viralmap/{sample}_mapped2virus_sorted.bam",
-		c5 = "unmapped/{sample}_mapped.bam"
 	output:
 		vc1 = "results/{sample}_virus_count.tsv",
-		vc2 = "results/{sample}_gene_count.tsv",
-		vc3 = "{sample}_vc.log"
+		vc2 = "{sample}_vc.log"
 	params:
 		script = "count_virus.py",
 		script_2 = "get_counts.py",
@@ -431,16 +431,8 @@ rule virus_count:
 
 		rm {params.outdir}telescope*
 
-		telescope assign {input.c5} {params.genome_dir}/*.gtf --outdir {params.outdir} 
-
-		python scripts/{params.script_2}
-
-		mv {params.outdir}counts.tsv {output.vc2}
-
-		rm {params.outdir}telescope*
-
 		rm -f Rplots.pdf
 
-		echo "Workflow runned properly for viral count of reads in {wildcards.sample}" > {output.vc3}
+		echo "Workflow runned properly for viral count of reads in {wildcards.sample}" > {output.vc2}
 
 		"""
